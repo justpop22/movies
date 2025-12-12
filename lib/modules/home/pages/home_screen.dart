@@ -98,9 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fit: BoxFit.cover,
                                       errorBuilder: (_,__,___) => const SizedBox(),
                                     ),
-                                  // Dark Overlay
                                   Container(color: Colors.black.withOpacity(0.4)),
-                                  // Blur Effect
                                   BackdropFilter(
                                     filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
                                     child: Container(color: Colors.black.withOpacity(0.2)),
@@ -114,7 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  // B. Foreground Content (Header + Large Posters)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -158,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       if (_pageController.position.haveDimensions) {
                                         page = _pageController.page ?? index.toDouble();
                                       }
-                                      // Scale: Center item is 1.0, side items shrink to 0.85
                                       final double scale = (1 - (page - index).abs() * 0.15).clamp(0.85, 1.0);
 
                                       return Transform.scale(
@@ -236,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: imageUrl.isNotEmpty
                 ? Image.network(
               imageUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
               height: double.infinity,
               width: double.infinity,
               errorBuilder: (context, error, stackTrace) =>
