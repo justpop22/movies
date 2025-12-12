@@ -1,17 +1,17 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
+import '../../../core/services/service_locater.dart'; // To access 'sl'
 import '../../../core/theme/app_colors.dart';
-import '../../auth/manager/auth_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
           const Spacer(),
           Center(
             child: FadeInDownBig(
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
               child: Hero(
                 tag: "logo",
                 child: Image.asset("assets/logo/app_logo.png"),
@@ -28,7 +28,7 @@ class SplashScreen extends StatelessWidget {
             ),
           ),
           FadeInUpBig(
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
             child: Hero(
               tag: "app_name",
               child: Material(
@@ -47,16 +47,22 @@ class SplashScreen extends StatelessWidget {
           const Spacer(),
           FadeInUpBig(
             onFinish: (direction) {
+              // 1. Get current user directly from Service Locator
+              final user = sl<FirebaseAuth>().currentUser;
+
+              // 2. Decide logic
               final nextRoute = CacheManager.isFirstTime
                   ? RouteName.onBoarding
-                  : provider.user == null ? RouteName.login : RouteName.layout;
+                  : (user == null ? RouteName.login : RouteName.layout);
+
+              // 3. Navigate
               Navigator.pushReplacementNamed(context, nextRoute);
             },
-            delay: Duration(seconds: 2),
+            delay: const Duration(seconds: 2),
             child: Image.asset("assets/logo/route_logo.png"),
           ),
           FadeInUp(
-            delay: Duration(seconds: 2),
+            delay: const Duration(seconds: 2),
             child: Image.asset("assets/logo/supervised_logo.png"),
           ),
         ],

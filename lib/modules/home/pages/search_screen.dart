@@ -1,75 +1,201 @@
 import 'package:flutter/material.dart';
-import 'package:movies/core/theme/app_colors.dart';
-import 'package:movies/core/temp/app_data.dart';
-import 'package:movies/core/widgets/movie_grid_item.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SearchScreen extends StatefulWidget {
+// Check this import spelling: 'service_locater.dart' or 'services_locator.dart'
+import '../../../core/services/service_locater.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/params/movieparams.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
+import '../../../core/widgets/movie_grid_item.dart';
+
+class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<MoviesBloc>(),
+      child: const _SearchScreenContent(),
+    );
+  }
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenContent extends StatefulWidget {
+  const _SearchScreenContent();
+
+  @override
+  State<_SearchScreenContent> createState() => _SearchScreenContentState();
+}
+
+class _SearchScreenContentState extends State<_SearchScreenContent> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>> _searchResults = [];
-  bool _isSearching = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_onSearchChanged);
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    String query = _searchController.text.trim();
-    setState(() {
-      if (query.isNotEmpty) {
-        _isSearching = true;
-        _searchResults = AppData.movies
-            .where((movie) => movie['title']
-            .toString()
-            .toLowerCase()
-            .contains(query.toLowerCase()))
-            .toList();
-      } else {
-        _isSearching = false;
-        _searchResults = [];
+  /// Triggered when the user types
+  void _onSearchChanged(String query) {
+    if (query.trim().isNotEmpty) {
+      context.read<MoviesBloc>().add(SearchMoviesEvent(queryTerm: query));
+    } else {
+      // FIX 1: If user deletes text manually, reset the list
+      context.read<MoviesBloc>().add(ResetSearchEvent());
+    }
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.9) {
+
+      final currentQuery = _searchController.text.trim();
+
+      // Only load more pages if we are actually searching
+      if (currentQuery.isNotEmpty) {
+        context.read<MoviesBloc>().add(
+          GetMoviesEvent(
+            params: MovieListParams(queryTerm: currentQuery),
+          ),
+        );
       }
-    });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.mainBackground,
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverAppBar(
+              backgroundColor: AppColors.mainBackground,
+              automaticallyImplyLeading: false,
+              toolbarHeight: 80,
+              title: _buildSearchField(),
+              floating: true,
+              pinned: true,
+              elevation: 0,
+            ),
+
+            BlocBuilder<MoviesBloc, MoviesState>(
+              builder: (context, state) {
+                if (state is MoviesInitial) {
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildEmptyState("Start searching for movies"),
+                  );
+                }
+
+                if (state is MoviesLoading) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColors.secondaryColor),
+                    ),
+                  );
+                }
+
+                if (state is MoviesFailure) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Text(
+                        state.message,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is MoviesLoaded) {
+                  if (state.movies.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _buildEmptyState("No movies found"),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: const EdgeInsets.all(16.0),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          // Bottom Loading Spinner logic
+                          if (index >= state.movies.length) {
+                            return const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.secondaryColor),
+                            );
+                          }
+
+                          final movie = state.movies[index];
+                          return MovieGridItem(
+                            imagePath: movie.mediumCoverImage ?? "",
+                            rating: movie.rating.toString(),
+                          );
+                        },
+                        childCount: state.hasReachedMax
+                            ? state.movies.length
+                            : state.movies.length + 1,
+                      ),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.7,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                    ),
+                  );
+                }
+
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildSearchField() {
     return Container(
-      height: 48,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+      height: 50,
+      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.headerBackground,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
         controller: _searchController,
+        onChanged: _onSearchChanged,
         style: const TextStyle(color: Colors.white, fontSize: 16),
         cursorColor: AppColors.secondaryColor,
         decoration: InputDecoration(
-          hintText: "Search",
+          hintText: "Search by title...",
           hintStyle: TextStyle(color: AppColors.disabledText.withOpacity(0.7)),
           prefixIcon: const Icon(Icons.search, color: AppColors.disabledText, size: 24),
-          suffixIcon: _isSearching
-              ? IconButton(
+          suffixIcon: IconButton(
             icon: const Icon(Icons.clear, color: AppColors.disabledText, size: 20),
             onPressed: () {
               _searchController.clear();
+              context.read<MoviesBloc>().add(ResetSearchEvent());
+              FocusScope.of(context).unfocus();
             },
-          )
-              : null,
+          ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
         ),
@@ -77,92 +203,16 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/icons/popcorn_icon.png',
-            width: 150,
-            height: 150,
-          ),
-          const SizedBox(height: 20),
-          // const Text(
-          //   "Start Searching for your next show!",
-          //   style: TextStyle(
-          //     color: AppColors.disabledText,
-          //     fontSize: 18,
-          //   ),
-          // ),
-        ],
-      ),
-    );
-  }
-
-  //  GridView  MovieGridItem ---
-  Widget _buildSearchResultsGrid() {
-    if (_searchResults.isEmpty) {
-      return const Center(
-        child: Text(
-          "No movies found.",
-          style: TextStyle(color: AppColors.disabledText, fontSize: 16),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      // GridView.builder  (Grid)
-      child: GridView.builder(
-        //   CustomScrollView
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-
-        itemCount: _searchResults.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemBuilder: (context, index) {
-          final movie = _searchResults[index];
-
-         // Using MovieGridItem
-          return MovieGridItem(
-            imagePath: movie['image'],
-            rating: movie['rate'].toString(),
-          );
-        },
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: AppColors.mainBackground,
-            automaticallyImplyLeading: false,
-            toolbarHeight: 60,
-            title: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: _buildSearchField(),
-            ),
-            pinned: true,
-            elevation: 0,
-          ),
-
-          // SliverFillRemaining
-          SliverFillRemaining(
-            hasScrollBody: true,
-            child: _isSearching
-                ? _buildSearchResultsGrid()
-                : _buildEmptyState(),
+          const Icon(Icons.movie_creation_outlined, size: 80, color: AppColors.disabledText),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: const TextStyle(color: AppColors.disabledText, fontSize: 16),
           ),
         ],
       ),

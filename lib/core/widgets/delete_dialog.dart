@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:movies/core/routes/app_route_name.dart';
-import 'package:provider/provider.dart';
-import '../../modules/auth/manager/auth_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../features/auth/presentation/cubit/auth_event.dart';
 import '../theme/app_colors.dart';
 
 void showDeleteConfirmation(BuildContext context) {
-  final authProvider = context.read<AuthProvider>();
-
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
@@ -25,14 +24,12 @@ void showDeleteConfirmation(BuildContext context) {
           child: const Text("Cancel", style: TextStyle(color: AppColors.primaryText)),
         ),
         TextButton(
-          onPressed: () async {
-            Navigator.of(ctx).pop();
+          onPressed: () {
+            Navigator.of(ctx).pop(); // Close the dialog
 
-            bool success = await authProvider.deleteUserAccount(context);
-
-            if (success && context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(context, RouteName.login, (route) => false);
-            }
+            // Trigger the Delete Event in AuthBloc
+            // The BlocListener in your Screen will handle the navigation to Login
+            context.read<AuthBloc>().add(DeleteAccountEvent());
           },
           child: const Text("Delete", style: TextStyle(color: AppColors.dangerColor)),
         ),

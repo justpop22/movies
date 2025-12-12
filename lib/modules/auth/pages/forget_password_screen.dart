@@ -1,75 +1,77 @@
-import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../core/widgets/custom_btn.dart';
 
-import '../../../core/widgets/custom_btn.dart';
-import '../../../l10n/app_localizations.dart';
-import '../manager/auth_provider.dart';
+import '../../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../../features/auth/presentation/cubit/auth_event.dart';
+import '../../../features/auth/presentation/cubit/auth_state.dart';
 
-class ForgetPasswordScreen extends StatelessWidget {
+
+class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
 
-  Future<void> passwordReset(BuildContext context, AuthProvider provider) async {
-    final email = provider.emailController.text.trim();
+  @override
+  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
+}
 
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter your email")),
-      );
-      return;
-    }
+class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+  late final TextEditingController _emailController;
+  final _formKey = GlobalKey<FormState>();
 
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+  }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("If this email is registered, a password reset link has been sent.")),
-      );
-    } on FirebaseAuthException catch (e) {
-      String message = "Something went wrong";
-
-      switch (e.code) {
-        case "invalid-email":
-          message = "Invalid email address";
-          break;
-        case "user-not-found":
-
-          message = "If this email is registered, a password reset link has been sent.";
-          break;
-        default:
-          message = e.message ?? "Something went wrong";
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var locale = AppLocalizations.of(context)!;
 
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(locale.resetPassword),
-        ),
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Consumer<AuthProvider>(
-              builder: (context, provider, child) {
-                return Form(
-                  key: provider.formKey,
+    return BlocProvider(
+      create: (context) => sl<AuthBloc>(),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthActionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+          } else if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(locale.resetPassword),
+            ),
+            body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  key: _formKey,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height * 0.8,
+                    ),
                     child: IntrinsicHeight(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -78,31 +80,51 @@ class ForgetPasswordScreen extends StatelessWidget {
                             child: Image.asset("assets/images/reset_password.png"),
                           ),
                           TextFormField(
-                            controller: provider.emailController,
+                            controller: _emailController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your email";
+                              }
+                              final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                              if (!emailRegex.hasMatch(value)) {
+                                return "Please enter a valid email";
+                              }
+                              return null;
+                            },
                             onTapOutside: (event) {
                               FocusManager.instance.primaryFocus?.unfocus();
                             },
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.mail),
+                              prefixIcon: const Icon(Icons.mail),
                               hintText: locale.email,
                             ),
                           ),
                           const SizedBox(height: 28),
+
                           CustomBtn(
                             isExpanded: true,
-                            onTap: () => passwordReset(context, provider),
+                            isLoading: state is AuthLoading,
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                context.read<AuthBloc>().add(
+                                  ForgotPasswordEvent(
+                                    email: _emailController.text.trim(),
+                                  ),
+                                );
+                              }
+                            },
                             text: locale.verifyEmail,
                           ),
-                          Spacer(),
+                          const Spacer(),
                         ],
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

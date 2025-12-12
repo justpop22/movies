@@ -1,54 +1,109 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:movies/modules/auth/manager/auth_provider.dart';
 import 'package:provider/provider.dart';
-import '../../../core/provider/app_provider.dart';
-import '../../../core/routes/app_route_name.dart';
-import '../../../core/widgets/custom_btn.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/theme/app_colors.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+import '../../../../core/params/login_params.dart';
+import '../../../../core/provider/app_provider.dart';
+import '../../../../core/routes/app_route_name.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/custom_btn.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../../features/auth/presentation/cubit/auth_event.dart';
+import '../../../features/auth/presentation/cubit/auth_state.dart';
+
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isShowPassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var appProvider = Provider.of<AppProvider>(context);
     var theme = Theme.of(context);
     var locale = AppLocalizations.of(context)!;
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
-      child: Scaffold(
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Consumer<AuthProvider>(
-              builder: (context, provider, child) {
-                return Form(
-                  key: provider.formKey,
+
+    return BlocProvider(
+      create: (context) => sl<AuthBloc>(),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is Authenticated) {
+            Navigator.pushReplacementNamed(context, RouteName.layout);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Welcome back, ${state.user.displayName}"),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  key: _formKey,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height,
+                    ),
                     child: IntrinsicHeight(
                       child: Column(
                         children: [
-                          Spacer(),
+                          const Spacer(),
                           Center(
                             child: Hero(
                               tag: "logo",
                               child: Image.asset("assets/logo/app_logo.png"),
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
+
+                          // --- Email Field ---
                           TextFormField(
-                            controller: provider.emailController,
+                            controller: _emailController,
                             validator: (value) {
                               bool isEmail = RegExp(
                                 r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-                              ).hasMatch(value!);
+                              ).hasMatch(value ?? "");
                               if (value == null || value.isEmpty) {
                                 return "Please enter email";
                               } else if (!isEmail) {
@@ -61,47 +116,47 @@ class LoginScreen extends StatelessWidget {
                               FocusManager.instance.primaryFocus?.unfocus();
                             },
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.mail),
+                              prefixIcon: const Icon(Icons.mail),
                               hintText: locale.email,
                             ),
                           ),
-                          SizedBox(height: 12),
-                          StatefulBuilder(
-                            builder: (context, setState) {
-                              return TextFormField(
-                                controller: provider.passwordController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Please enter password";
-                                  } else if (value.length < 6) {
-                                    return "must be length more than 6 numbers";
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                onTapOutside: (event) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                obscureText: isShowPassword,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: locale.password,
-                                  suffixIcon: InkWell(
-                                    onTap: () {
-                                      isShowPassword = !isShowPassword;
-                                      setState(() {});
-                                    },
-                                    child: Icon(
-                                      isShowPassword
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                    ),
-                                  ),
-                                ),
-                              );
+                          const SizedBox(height: 12),
+
+                          // --- Password Field ---
+                          TextFormField(
+                            controller: _passwordController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter password";
+                              } else if (value.length < 6) {
+                                return "must be length more than 6 numbers";
+                              } else {
+                                return null;
+                              }
                             },
+                            onTapOutside: (event) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
+                            obscureText: isShowPassword,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.lock),
+                              hintText: locale.password,
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isShowPassword = !isShowPassword;
+                                  });
+                                },
+                                child: Icon(
+                                  isShowPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                              ),
+                            ),
                           ),
-                          SizedBox(height: 12),
+                          const SizedBox(height: 12),
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -125,19 +180,26 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
+
                           CustomBtn(
-                            isLoading: provider.isLoading,
+                            isLoading: state is AuthLoading,
                             isExpanded: true,
-                            onTap: () async{
-                              bool success = await provider.login(context);
-                              if(success){
-                                Navigator.pushReplacementNamed(context, RouteName.layout);
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                context.read<AuthBloc>().add(
+                                  LoginEvent(
+                                    params: LoginParams(
+                                      emailOrUsername: _emailController.text.trim(),
+                                      password: _passwordController.text,
+                                    ),
+                                  ),
+                                );
                               }
                             },
                             text: locale.login,
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Text.rich(
                             TextSpan(
                               text: locale.notHaveAccount,
@@ -161,27 +223,28 @@ class LoginScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 100,
                                 child: Divider(
                                   color: AppColors.secondaryColor,
                                   thickness: 1,
                                 ),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
                                 locale.or,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.secondaryColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              SizedBox(
+                              const SizedBox(width: 8),
+                              const SizedBox(
                                 width: 100,
                                 child: Divider(
                                   color: AppColors.secondaryColor,
@@ -190,23 +253,22 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
+
                           CustomBtn(
-                            isLoading: provider.isLoading,
+                            isLoading: state is AuthLoading,
                             isExpanded: true,
-                            onTap: () async {
-                              bool success = await provider.signInWithGoogle(context);
-                              if(success && context.mounted){
-                                Navigator.pushReplacementNamed(context, RouteName.layout);
-                              }
+                            onTap: () {
+                              context.read<AuthBloc>().add(LoginWithGoogleEvent());
                             },
                             text: locale.googleLogin,
                             icon: FontAwesomeIcons.google,
                           ),
-                          Spacer(),
+                          const Spacer(),
+
                           AnimatedToggleSwitch<String>.rolling(
                             current: appProvider.local,
-                            values: ["en", "ar"],
+                            values: const ["en", "ar"],
                             iconList: [
                               Image.asset("assets/icons/en.png"),
                               Image.asset("assets/icons/ar.png"),
@@ -215,23 +277,23 @@ class LoginScreen extends StatelessWidget {
                               appProvider.changeLanguage(value);
                             },
                             indicatorIconScale: 1.2,
-                            style: ToggleStyle(
+                            style: const ToggleStyle(
                               backgroundColor: Colors.transparent,
                               indicatorColor: AppColors.secondaryColor,
                               borderColor: AppColors.secondaryColor,
                             ),
                             textDirection: TextDirection.ltr,
                           ),
-                          Spacer(),
+                          const Spacer(),
                         ],
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

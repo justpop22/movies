@@ -1,207 +1,295 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:movies/modules/auth/services/auth_services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import '../../../core/provider/app_provider.dart';
-import '../../../core/routes/app_route_name.dart';
-import '../../../core/widgets/avatar.dart';
-import '../../../core/widgets/custom_btn.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/theme/app_colors.dart';
-import '../manager/auth_provider.dart';
-class RegisterScreen extends StatelessWidget {
-  RegisterScreen({super.key});
+
+import '../../../../core/params/signup_params.dart';
+import '../../../../core/provider/app_provider.dart';
+import '../../../../core/routes/app_route_name.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/custom_btn.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../../features/auth/presentation/cubit/auth_event.dart';
+import '../../../features/auth/presentation/cubit/auth_state.dart';
+
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  late final TextEditingController _rePasswordController;
+  late final TextEditingController _phoneController;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isShowPassword = true;
+  int selectedAvatarIndex = 0;
+
+  // ✅ MOVED: Define the avatars list here (since AuthServices is deleted)
+  final List<String> _avatars = [
+    'assets/logo/profile1.png',
+    'assets/logo/profile2.png',
+    'assets/logo/profile3.png',
+    'assets/logo/profile4.png',
+    'assets/logo/profile5.png',
+    'assets/logo/profile6.png',
+    'assets/logo/profile7.png',
+    'assets/logo/profile8.png',
+    'assets/logo/profile9.png',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _rePasswordController = TextEditingController();
+    _phoneController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _rePasswordController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var appProvider = Provider.of<AppProvider>(context);
     var theme = Theme.of(context);
     var locale = AppLocalizations.of(context)!;
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(locale.register),
-        ),
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Consumer<AuthProvider>(
-              builder: (context, provider, child) {
-                return Form(
-                  key: provider.formKey,
+
+    return BlocProvider(
+      create: (context) => sl<AuthBloc>(),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is Authenticated) {
+            Navigator.pushNamedAndRemoveUntil(context, RouteName.login, (route) => false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Account Created! Please Login."), backgroundColor: Colors.green),
+            );
+          } else if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(locale.register),
+            ),
+            body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  key: _formKey,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height,
+                    ),
                     child: IntrinsicHeight(
                       child: Column(
                         children: [
-                          Spacer(),
-                          AvatarPicker(
-                            avatarList: AuthServices.defaultAvatars,
-                            avatarRadius: 70,
+                          const Spacer(),
+
+                          // --- Avatar List ---
+                          SizedBox(
+                            height: 100,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: _avatars.length, // ✅ Use local list
+                              separatorBuilder: (context, index) => const SizedBox(width: 10),
+                              itemBuilder: (context, index) {
+                                final isSelected = selectedAvatarIndex == index;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedAvatarIndex = index;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: isSelected
+                                          ? Border.all(color: AppColors.secondaryColor, width: 3)
+                                          : null,
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 35,
+                                      backgroundImage: AssetImage(_avatars[index]), // ✅ Use local list
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                          SizedBox(height: 12,),
-                          Text("Avatar",style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                          ),),
-                          Spacer(),
+
+                          // ... (The rest of your build method remains exactly the same) ...
+
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Choose Avatar",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          const Spacer(),
+
+                          // Name Input
                           TextFormField(
+                            controller: _nameController,
                             validator: (value) {
-                              if(value == null || value.isEmpty){
-                                return "Please enter name";
-                              }else{
-                                return null;
-                              }
-                            },
-                            controller: provider.nameController,
-                            onTapOutside: (event) {
-                              FocusManager.instance.primaryFocus?.unfocus();
+                              if (value == null || value.isEmpty) return "Please enter name";
+                              return null;
                             },
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.person),
+                              prefixIcon: const Icon(Icons.person),
                               hintText: locale.name,
                             ),
                           ),
-                          SizedBox(height: 12,),
+                          const SizedBox(height: 12),
+
+                          // Email Input
                           TextFormField(
+                            controller: _emailController,
                             validator: (value) {
-                              bool isEmail = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value!);
-                              if(value == null || value.isEmpty){
-                                return "Please enter email";
-                              }else if(!isEmail){
-                                return "Please enter valid email";
-                              }
-                              else{
-                                return null;
-                              }
-                            },
-                            controller: provider.emailController,
-                            onTapOutside: (event) {
-                              FocusManager.instance.primaryFocus?.unfocus();
+                              bool isEmail = RegExp(
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value ?? "");
+                              if (value == null || value.isEmpty) return "Please enter email";
+                              if (!isEmail) return "Please enter valid email";
+                              return null;
                             },
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.mail),
+                              prefixIcon: const Icon(Icons.mail),
                               hintText: locale.email,
                             ),
                           ),
-                          SizedBox(height: 12,),
-                          StatefulBuilder(
-                            builder: (context, setState){
-                              return TextFormField(
-                                validator: (value) {
-                                  if(value == null || value.isEmpty){
-                                    return "Please enter password";
-                                  }else if(value.length < 6){
-                                    return "must be length more than 6 numbers";
-                                  }else{
-                                    return null;
-                                  }
-                                },
-                                controller: provider.passwordController,
-                                onTapOutside: (event) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                obscureText: isShowPassword,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: locale.password,
-                                  suffixIcon: InkWell(
-                                      onTap: () {
-                                        isShowPassword = !isShowPassword;
-                                        setState((){});
-                                      },
-                                      child: Icon(isShowPassword? Icons.visibility_off : Icons.visibility)),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(height: 12,),
-                          StatefulBuilder(
-                            builder: (context, setState){
-                              return TextFormField(
-                                validator: (value) {
-                                  if(value != provider.passwordController.text){
-                                    return "Password not matched";
-                                  }else{
-                                    return null;
-                                  }
-                                },
-                                controller: provider.rePasswordController,
-                                onTapOutside: (event) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                obscureText: isShowPassword,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: locale.rePassword,
-                                  suffixIcon: InkWell(
-                                      onTap: () {
-                                        isShowPassword = !isShowPassword;
-                                        setState((){});
-                                      },
-                                      child: Icon(isShowPassword? Icons.visibility_off : Icons.visibility)),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(height: 12,),
+                          const SizedBox(height: 12),
+
+                          // Password Input
                           TextFormField(
+                            controller: _passwordController,
+                            obscureText: isShowPassword,
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please enter phone number";
-                              } else if (value.length != 11) {
-                                return "Phone number must be 11 digits";
-                              }
+                              if (value == null || value.isEmpty) return "Please enter password";
+                              if (value.length < 6) return "Must be at least 6 characters";
                               return null;
                             },
-                            controller: provider.phoneController,
-                            keyboardType: TextInputType.phone,
-                            onTapOutside: (event) {
-                              FocusManager.instance.primaryFocus?.unfocus();
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.lock),
+                              hintText: locale.password,
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isShowPassword = !isShowPassword;
+                                  });
+                                },
+                                child: Icon(isShowPassword ? Icons.visibility_off : Icons.visibility),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Re-Password Input
+                          TextFormField(
+                            controller: _rePasswordController,
+                            obscureText: isShowPassword,
+                            validator: (value) {
+                              if (value != _passwordController.text) return "Passwords do not match";
+                              return null;
                             },
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.phone),
+                              prefixIcon: const Icon(Icons.lock),
+                              hintText: locale.rePassword,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Phone Input
+                          TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return "Please enter phone number";
+                              if (value.length != 11) return "Phone number must be 11 digits";
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.phone),
                               hintText: locale.phoneNumber,
                             ),
                           ),
-                          SizedBox(height: 12,),
-                          Spacer(),
+                          const SizedBox(height: 12),
+                          const Spacer(),
+
+                          // Create Account Button
                           CustomBtn(
-                              isExpanded: true,
-                              isLoading: provider.isLoading,
-                              onTap: () async{
-                                bool success = await provider.createAccount(context);
-                                if(success){
-                                  Navigator.pushNamedAndRemoveUntil(context, RouteName.login, (route) => false);
-                                }
-                              }, text: locale.createAccount),
-                          Spacer(),
-                          Text.rich(
-                              TextSpan(
-                                  text: locale.haveAccount,
-                                  children: [
-                                    TextSpan(
-                                        text: locale.login,style: theme.textTheme.bodyLarge!.copyWith(
-                                        color: AppColors.secondaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.italic,
-                                        decorationColor: AppColors.secondaryColor
+                            isExpanded: true,
+                            isLoading: state is AuthLoading,
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                context.read<AuthBloc>().add(
+                                  SignUpEvent(
+                                    params: SignUpParams(
+                                      name: _nameController.text.trim(),
+                                      email: _emailController.text.trim(),
+                                      password: _passwordController.text,
+                                      repassword: _rePasswordController.text,
+                                      phone: _phoneController.text.trim(),
+                                      avatarId: selectedAvatarIndex,
                                     ),
-                                        recognizer: TapGestureRecognizer()..onTap = () {
-                                          Navigator.pushReplacementNamed(context, RouteName.login);
-                                        }
-                                    )
-                                  ]
-                              )
+                                  ),
+                                );
+                              }
+                            },
+                            text: locale.createAccount,
                           ),
-                          Spacer(),
+                          const Spacer(),
+
+                          // Login Link
+                          Text.rich(
+                            TextSpan(
+                              text: locale.haveAccount,
+                              children: [
+                                TextSpan(
+                                  text: locale.login,
+                                  style: theme.textTheme.bodyLarge!.copyWith(
+                                    color: AppColors.secondaryColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.italic,
+                                    decorationColor: AppColors.secondaryColor,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.pushReplacementNamed(context, RouteName.login);
+                                    },
+                                )
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+
+                          // Language Toggle
                           AnimatedToggleSwitch<String>.rolling(
                             current: appProvider.local,
-                            values: ["en", "ar"],
+                            values: const ["en", "ar"],
                             iconList: [
                               Image.asset("assets/icons/en.png"),
                               Image.asset("assets/icons/ar.png"),
@@ -210,23 +298,23 @@ class RegisterScreen extends StatelessWidget {
                               appProvider.changeLanguage(value);
                             },
                             indicatorIconScale: 1.2,
-                            style: ToggleStyle(
+                            style: const ToggleStyle(
                               backgroundColor: Colors.transparent,
                               indicatorColor: AppColors.secondaryColor,
                               borderColor: AppColors.secondaryColor,
                             ),
                             textDirection: TextDirection.ltr,
                           ),
-                          Spacer(),
+                          const Spacer(),
                         ],
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

@@ -1,18 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:movies/core/theme/app_colors.dart';
-import 'package:movies/core/temp/app_data.dart';
-import 'package:movies/core/widgets/movie_grid_item.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BrowseScreen extends StatefulWidget {
+import '../../../core/services/service_locater.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/params/movieparams.dart';
+import '../../../core/widgets/movie_grid_item.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
+
+class BrowseScreen extends StatelessWidget {
   final String? initialCategory;
-  const BrowseScreen({super.key,this.initialCategory});
+
+  const BrowseScreen({super.key, this.initialCategory});
 
   @override
-  State<BrowseScreen> createState() => _BrowseScreenState();
+  Widget build(BuildContext context) {
+    // 1. Provide the Bloc
+    return BlocProvider(
+      create: (context) => sl<MoviesBloc>()
+        ..add(GetMoviesEvent(
+          params: MovieListParams(genre: initialCategory),
+        )),
+      child: _BrowseScreenContent(initialCategory: initialCategory),
+    );
+  }
 }
 
-class _BrowseScreenState extends State<BrowseScreen> {
+class _BrowseScreenContent extends StatefulWidget {
+  final String? initialCategory;
+  const _BrowseScreenContent({required this.initialCategory});
 
+  @override
+  State<_BrowseScreenContent> createState() => _BrowseScreenContentState();
+}
+
+class _BrowseScreenContentState extends State<_BrowseScreenContent> {
+  final ScrollController _scrollController = ScrollController();
+
+  // Categories List
   final List<String> _categories = [
     'Action',
     'Drama',
@@ -21,15 +47,59 @@ class _BrowseScreenState extends State<BrowseScreen> {
     'Animation',
     'Comedy',
     'Horror',
+    'Romance',
+    'Thriller',
   ];
 
-
-  late String? _selectedCategory;
+  String? _selectedCategory;
 
   @override
   void initState() {
     super.initState();
     _selectedCategory = widget.initialCategory;
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+
+    if (currentScroll >= maxScroll * 0.9) {
+      // Load next page with the CURRENT category
+      context.read<MoviesBloc>().add(
+        GetMoviesEvent(
+          params: MovieListParams(genre: _selectedCategory),
+        ),
+      );
+    }
+  }
+
+  // --- Filter Logic ---
+  void _onCategorySelected(String category) {
+    setState(() {
+      if (_selectedCategory == category) {
+        _selectedCategory = null; // Deselect (Show all)
+      } else {
+        _selectedCategory = category; // Select new
+      }
+    });
+
+    // 1. Reset the list (Clear old data & reset page to 1)
+    context.read<MoviesBloc>().add(ResetSearchEvent());
+
+    // 2. Fetch new data
+    context.read<MoviesBloc>().add(
+      GetMoviesEvent(
+        params: MovieListParams(genre: _selectedCategory),
+      ),
+    );
   }
 
   @override
@@ -39,8 +109,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
+          controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           slivers: [
+            // --- Category Bar ---
             SliverAppBar(
               backgroundColor: AppColors.mainBackground,
               automaticallyImplyLeading: false,
@@ -49,8 +121,74 @@ class _BrowseScreenState extends State<BrowseScreen> {
               title: _buildCategoryList(),
             ),
 
-            _buildMovieGrid(),
+            // --- Movie Grid (Reactive) ---
+            BlocBuilder<MoviesBloc, MoviesState>(
+              builder: (context, state) {
+                if (state is MoviesInitial || state is MoviesLoading) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColors.secondaryColor),
+                    ),
+                  );
+                }
 
+                if (state is MoviesFailure) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Text(
+                        state.message,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is MoviesLoaded) {
+                  if (state.movies.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Text(
+                          "No movies found for this category",
+                          style: TextStyle(color: AppColors.disabledText),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: const EdgeInsets.all(15),
+                    sliver: SliverGrid(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.65,
+                        crossAxisSpacing: 15,
+                        mainAxisSpacing: 15,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          // Loading Spinner at bottom
+                          if (index >= state.movies.length) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+
+                          final movie = state.movies[index];
+                          return MovieGridItem(
+                            // Use the correct field from your API Entity
+                            imagePath: movie.mediumCoverImage ?? "",
+                            rating: movie.rating.toString(),
+                          );
+                        },
+                        childCount: state.hasReachedMax
+                            ? state.movies.length
+                            : state.movies.length + 1,
+                      ),
+                    ),
+                  );
+                }
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              },
+            ),
             const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
           ],
         ),
@@ -66,30 +204,19 @@ class _BrowseScreenState extends State<BrowseScreen> {
         itemCount: _categories.length,
         itemBuilder: (context, index) {
           final category = _categories[index];
-
           final isSelected = category == _selectedCategory;
 
           return Padding(
             padding: const EdgeInsets.only(right: 10),
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-
-                  if (isSelected) {
-                    _selectedCategory = null;
-                  } else {
-                    _selectedCategory = category;
-                  }
-                });
-              },
+              onTap: () => _onCategorySelected(category),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-
-                  color: isSelected ? AppColors.secondaryColor : AppColors.mainBackground,
+                  color: isSelected ? AppColors.secondaryColor : AppColors.headerBackground,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? AppColors.mainBackground : AppColors.secondaryColor,
+                    color: isSelected ? AppColors.mainBackground : Colors.transparent,
                     width: 1,
                   ),
                 ),
@@ -97,7 +224,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 child: Text(
                   category,
                   style: TextStyle(
-                    color: isSelected ? Colors.black : AppColors.secondaryColor,
+                    color: isSelected ? Colors.black : AppColors.secondaryText,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -106,55 +233,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildMovieGrid() {
-    final List<Map<String, dynamic>> displayedMovies;
-
-    // Filtering Logic
-    if (_selectedCategory == null) {
-
-      displayedMovies = AppData.movies;
-    } else {
-
-      displayedMovies = AppData.movies
-          .where((movie) => movie['category'] == _selectedCategory)
-          .toList();
-    }
-
-    if (displayedMovies.isEmpty) {
-      return const SliverFillRemaining(
-        child: Center(
-          child: Text(
-            "No Film to this Category",
-            style: TextStyle(color: AppColors.secondaryText, fontSize: 16),
-          ),
-        ),
-      );
-    }
-
-    return SliverPadding(
-      padding: const EdgeInsets.all(15),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.65,
-          crossAxisSpacing: 15,
-          mainAxisSpacing: 15,
-        ),
-        delegate: SliverChildBuilderDelegate(
-              (context, index) {
-            final movie = displayedMovies[index % displayedMovies.length];
-
-            return MovieGridItem(
-              imagePath: movie['image'],
-              rating: movie['rate'].toString(),
-            );
-          },
-          childCount: displayedMovies.length*2,
-        ),
       ),
     );
   }

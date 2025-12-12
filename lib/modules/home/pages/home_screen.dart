@@ -1,10 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:movies/modules/home/pages/main_layout.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Make sure these imports match your actual project structure
-import '../../../core/temp/app_data.dart';
+// Adjust these imports to match your folder structure exactly
+import '../../../core/services/service_locater.dart';
+import '../../../core/params/movieparams.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
 import '../../../core/widgets/movie_grid_item.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../home/pages/main_layout.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,247 +20,202 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // 1. Start at a high number to allow scrolling left immediately.
-  static const int _initialPage = 10000;
-  static const int _infiniteItemCount = 20000;
-
+  // 1. Bloc for the Top Carousel (Trending Movies)
+  late MoviesBloc _trendingBloc;
   late final PageController _pageController;
+  final ValueNotifier<int> _currentIndexNotifier = ValueNotifier(0);
 
-  // Use a ValueNotifier to optimize rebuilds
-  final ValueNotifier<double> _currentPageNotifier = ValueNotifier(_initialPage.toDouble());
+  // 2. List of Categories
+  final List<String> _categories = [
+    'Action',
+    'Drama',
+    'Sci-Fi',
+    'Adventure',
+    'Animation',
+    'Comedy',
+    'Horror',
+    'Romance',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      viewportFraction: 0.75,
-      initialPage: _initialPage,
-    );
+    // Initialize Trending Bloc (Trendy/Popular)
+    _trendingBloc = sl<MoviesBloc>()
+      ..add(GetMoviesEvent(params: MovieListParams(sortBy: 'download_count')));
 
-    _pageController.addListener(() {
-      _currentPageNotifier.value = _pageController.page ?? _initialPage.toDouble();
-    });
+    // Increased viewportFraction to 0.8 to make the center poster wider
+    _pageController = PageController(viewportFraction: 0.8, initialPage: 0);
   }
 
   @override
   void dispose() {
+    _trendingBloc.close();
     _pageController.dispose();
-    _currentPageNotifier.dispose();
+    _currentIndexNotifier.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (AppData.movies.isEmpty) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    final List<Map<String, dynamic>> actionMovies = AppData.getMoviesByCategory('Action');
-    final List<Map<String, dynamic>> carouselMovies = AppData.movies;
-    final int carouselLength = carouselMovies.length;
-    // We calculate screen height to size the background appropriately within the scroll view
+    // Screen height helper
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.black,
-      // 1. SingleChildScrollView is now the parent
       body: SingleChildScrollView(
-        child: Stack(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
           children: [
-            // 2. The Background Image is now the first child of this Stack
-            // It will scroll up as the user scrolls down
             SizedBox(
-              height: screenHeight * 0.75, // Give it a fixed height within the scroll view
-              width: double.infinity,
-              child: ValueListenableBuilder<double>(
-                valueListenable: _currentPageNotifier,
-                builder: (context, pageValue, child) {
-                  final int index = (pageValue.round()) % carouselLength;
-                  final String bgImage = carouselMovies[index]['image'] as String;
+              height: screenHeight * 0.65,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: BlocBuilder<MoviesBloc, MoviesState>(
+                      bloc: _trendingBloc,
+                      builder: (context, state) {
+                        if (state is! MoviesLoaded || state.movies.isEmpty) {
+                          return Container(color: Colors.black);
+                        }
 
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 350),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    child: Stack(
-                      key: ValueKey(bgImage),
-                      fit: StackFit.expand,
-                      children: [
-                        Image.asset(
-                          bgImage,
-                          fit: BoxFit.cover,
-                          key: ValueKey('bg_$bgImage'),
-                        ),
-                        // Dark Overlay
-                        Container(color: Colors.black.withOpacity(0.45)),
-                        // Blur Effect
-                        BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-                          child: Container(color: Colors.black.withOpacity(0.2)),
-                        ),
-                        // Gradient to blend into the black background at the bottom
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.0),
-                                Colors.black, // Fade to solid black at bottom
-                              ],
-                              stops: const [0.0, 0.6, 1.0],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+                        return ValueListenableBuilder<int>(
+                          valueListenable: _currentIndexNotifier,
+                          builder: (context, index, _) {
+                            final safeIndex = index.clamp(0, state.movies.length - 1);
+                            final movie = state.movies[safeIndex];
+                            // Try large image first, fallback to medium
+                            final imagePath = movie.largeCoverImage ?? movie.mediumCoverImage ?? "";
 
-            // 3. Main Content Column sits on top of the background in the Stack
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 50.0),
-
-                // --- "Available Now" Header ---
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Text(
-                    'Available Now',
-                    style: TextStyle(
-                      fontFamily: 'CustomFancyFont',
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // --- Infinite Carousel ---
-                SizedBox(
-                  height: 450.0,
-                  child: AnimatedBuilder(
-                      animation: _pageController,
-                      builder: (context, child) {
-                        return PageView.builder(
-                          controller: _pageController,
-                          itemCount: _infiniteItemCount,
-                          itemBuilder: (context, index) {
-                            double page = _pageController.hasClients
-                                ? (_pageController.page ?? _initialPage.toDouble())
-                                : _initialPage.toDouble();
-
-                            final double scale = (1 - (page - index).abs() * 0.2).clamp(0.7, 1.0);
-
-                            final int movieIndex = index % carouselLength;
-                            final movie = carouselMovies[movieIndex];
-                            final String tagline = movie['category'];
-
-                            return Transform.scale(
-                              scale: scale,
-                              child: _buildLargePoster(tagline, movie['image'], movie['rate'], context),
-                            );
-                          },
-                        );
-                      }),
-                ),
-
-                // --- "Watch Now" Section ---
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Watch Now',
-                        style: TextStyle(
-                          fontFamily: 'CustomFancyFont',
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 30.0),
-
-                      // "Action" Category Title Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Action',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  transitionDuration: const Duration(milliseconds: 400),
-                                  pageBuilder: (_, __, ___) => const MainLayout(
-                                    initialIndex: 2,
-                                    initialCategory: 'Action',
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 500),
+                              child: Stack(
+                                key: ValueKey(imagePath),
+                                fit: StackFit.expand,
+                                children: [
+                                  if (imagePath.isNotEmpty)
+                                    Image.network(
+                                      imagePath,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_,__,___) => const SizedBox(),
+                                    ),
+                                  // Dark Overlay
+                                  Container(color: Colors.black.withOpacity(0.4)),
+                                  // Blur Effect
+                                  BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                                    child: Container(color: Colors.black.withOpacity(0.2)),
                                   ),
-                                  transitionsBuilder: (_, animation, __, child) {
-                                    const begin = Offset(1.0, 0.0);
-                                    const end = Offset.zero;
-                                    final tween = Tween(begin: begin, end: end)
-                                        .chain(CurveTween(curve: Curves.easeOut));
-                                    return SlideTransition(
-                                      position: animation.drive(tween),
-                                      child: child,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            child: const Row(
-                              children: [
-                                Text(
-                                  'See More',
-                                  style: TextStyle(fontSize: 16, color: Colors.yellow),
-                                ),
-                                Icon(Icons.arrow_right_alt, color: Colors.yellow, size: 20),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15.0),
-
-                      // The Action Movie List
-                      SizedBox(
-                        height: 170.0,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.zero,
-                          itemCount: actionMovies.length,
-                          itemBuilder: (context, index) {
-                            final movie = actionMovies[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 15.0),
-                              child: MovieGridItem(
-                                rating: movie['rate'],
-                                imagePath: movie['image'],
+                                  // Bottom Gradient (Fade to Black)
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [Colors.transparent, Colors.black],
+                                        stops: [0.5, 1.0],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
+                        );
+                      },
+                    ),
+                  ),
+
+                  // B. Foreground Content (Header + Large Posters)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 30),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Center(
+                          child: Image.asset(
+                              "assets/images/Available.png",
+                            width: 250,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+
+
+                      SizedBox(
+                        height: 350, // INCREASED HEIGHT for larger posters
+                        child: BlocBuilder<MoviesBloc, MoviesState>(
+                          bloc: _trendingBloc,
+                          builder: (context, state) {
+                            if (state is MoviesLoading) {
+                              return const Center(child: CircularProgressIndicator(color: AppColors.secondaryColor));
+                            }
+                            if (state is MoviesLoaded) {
+                              return PageView.builder(
+                                controller: _pageController,
+                                itemCount: state.movies.length,
+                                onPageChanged: (index) {
+                                  _currentIndexNotifier.value = index;
+                                },
+                                itemBuilder: (context, index) {
+                                  final movie = state.movies[index];
+
+                                  // Scale Animation Logic
+                                  return AnimatedBuilder(
+                                    animation: _pageController,
+                                    builder: (context, child) {
+                                      double page = index.toDouble();
+                                      if (_pageController.position.haveDimensions) {
+                                        page = _pageController.page ?? index.toDouble();
+                                      }
+                                      // Scale: Center item is 1.0, side items shrink to 0.85
+                                      final double scale = (1 - (page - index).abs() * 0.15).clamp(0.85, 1.0);
+
+                                      return Transform.scale(
+                                        scale: scale,
+                                        child: child,
+                                      );
+                                    },
+                                    child: _buildLargePoster(
+                                      movie.largeCoverImage ?? movie.mediumCoverImage ?? "",
+                                      movie.rating.toString(),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                            return const SizedBox();
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Center(
+                          child: Image.asset(
+                            "assets/images/Watch Now.png",
+                            width: 250, // Adjust height as needed
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                ],
+              ),
+            ),
 
-                const SizedBox(height: 40),
-              ],
+            // --- SECTION 2: CATEGORY ROWS ---
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, top: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ..._categories.map((category) => CategoryMovieRow(category: category)),
+                  const SizedBox(height: 50), // Bottom padding
+                ],
+              ),
             ),
           ],
         ),
@@ -262,49 +223,176 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildLargePoster(String tagline, String imageUrl, String rate, BuildContext context) {
+  // Helper for the Large Poster Card
+  Widget _buildLargePoster(String imageUrl, String rate) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+      // Margin creates spacing between items
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      // Elevation shadow for depth
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 10,
+            offset: const Offset(0, 10),
+          )
+        ],
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // The Image
           ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
-            child: Image.asset(
+            borderRadius: BorderRadius.circular(20.0),
+            child: imageUrl.isNotEmpty
+                ? Image.network(
               imageUrl,
               fit: BoxFit.cover,
               height: double.infinity,
               width: double.infinity,
-            ),
+              errorBuilder: (context, error, stackTrace) =>
+                  Container(color: Colors.grey[900], child: const Icon(Icons.broken_image, color: Colors.white)),
+            )
+                : Container(color: Colors.grey[900]),
           ),
+
+          // Rating Badge (Top Left)
           Positioned(
-            top: 15,
-            left: 15,
+            top: 20,
+            left: 20,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(color: Colors.white.withOpacity(0.2)),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     rate,
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
                     ),
                   ),
-                  const SizedBox(width: 3),
-                  const Icon(Icons.star, color: Colors.amber, size: 16),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.star, color: Colors.amber, size: 18),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+// --- REUSABLE WIDGET FOR EACH CATEGORY ROW ---
+class CategoryMovieRow extends StatefulWidget {
+  final String category;
+  const CategoryMovieRow({super.key, required this.category});
+
+  @override
+  State<CategoryMovieRow> createState() => _CategoryMovieRowState();
+}
+
+class _CategoryMovieRowState extends State<CategoryMovieRow> {
+  late MoviesBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    // Create a Bloc specifically for this row's category
+    _bloc = sl<MoviesBloc>()
+      ..add(GetMoviesEvent(params: MovieListParams(genre: widget.category)));
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 30),
+
+        // --- Row Header (Category Name + See More) ---
+        Padding(
+          padding: const EdgeInsets.only(right: 20.0, bottom: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.category,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              GestureDetector(
+                onTap: () {
+                  // Navigate to Browse Screen with this category selected
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MainLayout(initialIndex: 2, initialCategory: widget.category),
+                    ),
+                  );
+                },
+                child: const Row(
+                  children: [
+                    Text('See More', style: TextStyle(fontSize: 14, color: AppColors.secondaryColor)),
+                    Icon(Icons.arrow_right_alt, color: AppColors.secondaryColor, size: 18),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // --- The Horizontal List ---
+        SizedBox(
+          height: 200, // Fixed height for the container
+          child: BlocBuilder<MoviesBloc, MoviesState>(
+            bloc: _bloc,
+            builder: (context, state) {
+              if (state is MoviesLoading) {
+                return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.secondaryColor));
+              }
+              if (state is MoviesFailure) {
+                return const Center(child: Icon(Icons.error_outline, color: Colors.white24));
+              }
+              if (state is MoviesLoaded) {
+                if (state.movies.isEmpty) return const SizedBox();
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: state.movies.length,
+                  itemBuilder: (context, index) {
+                    final movie = state.movies[index];
+
+                    // FIX: Wrapped in Container with explicit WIDTH
+                    return Container(
+                      width: 130, // Forces the item to have width
+                      margin: const EdgeInsets.only(right: 14.0),
+                      child: MovieGridItem(
+                        rating: movie.rating.toString(),
+                        imagePath: movie.mediumCoverImage ?? "",
+                      ),
+                    );
+                  },
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ),
+      ],
     );
   }
 }
