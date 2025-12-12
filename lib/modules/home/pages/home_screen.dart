@@ -84,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context, index, _) {
                             final safeIndex = index.clamp(0, state.movies.length - 1);
                             final movie = state.movies[safeIndex];
-                            // Try large image first, fallback to medium
                             final imagePath = movie.largeCoverImage ?? movie.mediumCoverImage ?? "";
 
                             return AnimatedSwitcher(
@@ -105,17 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   BackdropFilter(
                                     filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
                                     child: Container(color: Colors.black.withOpacity(0.2)),
-                                  ),
-                                  // Bottom Gradient (Fade to Black)
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [Colors.transparent, Colors.black],
-                                        stops: [0.5, 1.0],
-                                      ),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -257,7 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 : Container(color: Colors.grey[900]),
           ),
 
-          // Rating Badge (Top Left)
           Positioned(
             top: 20,
             left: 20,
@@ -290,7 +277,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// --- REUSABLE WIDGET FOR EACH CATEGORY ROW ---
 class CategoryMovieRow extends StatefulWidget {
   final String category;
   const CategoryMovieRow({super.key, required this.category});
@@ -305,7 +291,6 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
   @override
   void initState() {
     super.initState();
-    // Create a Bloc specifically for this row's category
     _bloc = sl<MoviesBloc>()
       ..add(GetMoviesEvent(params: MovieListParams(genre: widget.category)));
   }
