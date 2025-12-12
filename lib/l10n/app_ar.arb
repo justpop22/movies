@@ -1,0 +1,19 @@
+{
+  "title": "مشغل الأفلام",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forgetPassword": "نسيت كلمة المرور؟",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "login": "تسجيل الدخول",
+  "register": "تسجيل",
+  "notHaveAccount": "لا تملك حسابًا؟ ",
+  "createAccount": "أنشئ حسابًا",
+  "createOne": "أنشئ حسابًا",
+  "name": "الاسم",
+  "rePassword": "تأكيد كلمة المرور",
+  "phoneNumber": "رقم الهاتف",
+  "verifyEmail": "تأكيد البريد الإلكتروني",
+  "haveAccount": "هل لديك حساب بالفعل؟ ",
+  "or": " أو ",
+  "googleLogin": "تسجيل الدخول باستخدام جوجل"
+}

@@ -1,0 +1,19 @@
+{
+  "title":  "Movies",
+  "email": "Email",
+  "password": "Password",
+  "forgetPassword": "Forget Password?",
+  "resetPassword": "Forget Password",
+  "login": "Login",
+  "register": "Register",
+  "notHaveAccount": "Don't Have Account ? ",
+  "createAccount": "Create Account",
+  "createOne": "Create One",
+  "name": "Name",
+  "rePassword": "Confirm Password",
+  "phoneNumber": "Phone Number",
+  "verifyEmail": "Verify Email",
+  "haveAccount": "Already Have Account ? ",
+  "or": " OR ",
+  "googleLogin": "Login With Google"
+}
