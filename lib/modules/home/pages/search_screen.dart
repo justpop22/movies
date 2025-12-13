@@ -131,8 +131,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
          // Using MovieGridItem
           return MovieGridItem(
-            imagePath: movie['image'],
-            rating: movie['rate'].toString(),
+           movie: movie,
           );
         },
       ),

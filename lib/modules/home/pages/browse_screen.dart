@@ -149,8 +149,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             final movie = displayedMovies[index % displayedMovies.length];
 
             return MovieGridItem(
-              imagePath: movie['image'],
-              rating: movie['rate'].toString(),
+             movie: movie,
             );
           },
           childCount: displayedMovies.length*2,

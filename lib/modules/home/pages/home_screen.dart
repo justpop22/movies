@@ -242,8 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(right: 15.0),
                               child: MovieGridItem(
-                                rating: movie['rate'],
-                                imagePath: movie['image'],
+                                movie: movie,
                               ),
                             );
                           },

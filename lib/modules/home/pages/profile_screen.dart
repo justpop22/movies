@@ -86,8 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               (context, index) {
             final movie = AppData.movies[index];
             return MovieGridItem(
-              imagePath: movie['image'],
-              rating: movie['rate'].toString(),
+              movie: movie,
             );
           },
           childCount: AppData.movies.length,
