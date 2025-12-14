@@ -5,8 +5,7 @@ class MovieSubEntity {
   final double rating;
   final List<String> genres;
   final String title;
-    final int id;
-
+  final int id;
 
   const MovieSubEntity({
     required this.id,

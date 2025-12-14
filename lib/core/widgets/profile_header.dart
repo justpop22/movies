@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_btn.dart';
 import '../../../core/widgets/exit_dialog.dart';
@@ -13,7 +12,6 @@ import '../../features/usre_arguments/presentaion/bloc/user_states.dart';
 import '../../modules/home/pages/edit_profile_screen.dart';
 
 class ProfileHeader extends StatefulWidget {
-  // ✅ 1. Accept counts as parameters
   final int watchListCount;
   final int historyCount;
 
@@ -43,10 +41,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    // Ensure User Info is fetched
+
     context.read<UserBloc>().add(GetUserInfoEvent());
-    // Note: We don't fetch favorites/history here because ProfileScreen
-    // handles that and passes the counts down.
   }
 
   ImageProvider _getAvatarProvider(UserEntity? user) {
@@ -63,17 +59,10 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
-        // ✅ 2. robust user extraction
-        // Try to get user from UserDataLoaded OR UserLoaded (if it exists there)
         UserEntity? currentUser;
         if (state is UserDataLoaded) {
           currentUser = state.user;
-        } else if (state is UserDataLoaded) {
-          // If UserLoaded also holds the user object, use it.
-          // If not, UserDataLoaded might be needed.
-          // Assuming UserLoaded contains 'user' property based on typical BLoC patterns:
-          // currentUser = state.user;
-        }
+        } else if (state is UserDataLoaded) {}
 
         final bool isLoading = (state is UserLoading);
 
@@ -85,24 +74,23 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             children: [
               const SizedBox(height: 10),
 
-              // --- Main Info Row ---
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // --- Avatar & Name ---
                   Expanded(
                     child: Column(
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                )
-                              ]),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.grey.shade200,
@@ -128,19 +116,17 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                     ),
                   ),
 
-                  // --- Stats Row ---
                   const SizedBox(width: 15),
                   Row(
                     children: [
-                      // ✅ 3. Use the passed parameters for counts
                       StatBox(
-                          label: "Wishlist",
-                          count: widget.watchListCount.toString()
+                        label: "Wishlist",
+                        count: widget.watchListCount.toString(),
                       ),
                       const SizedBox(width: 10),
                       StatBox(
-                          label: "History",
-                          count: widget.historyCount.toString()
+                        label: "History",
+                        count: widget.historyCount.toString(),
                       ),
                     ],
                   ),
@@ -148,7 +134,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               ),
               const SizedBox(height: 25),
 
-              // ... Buttons Row (Same as before) ...
               Row(
                 children: [
                   Expanded(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../core/services/service_locater.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/params/movieparams.dart';
@@ -16,12 +15,9 @@ class BrowseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Provide the Bloc
     return BlocProvider(
       create: (context) => sl<MoviesBloc>()
-        ..add(GetMoviesEvent(
-          params: MovieListParams(genre: initialCategory),
-        )),
+        ..add(GetMoviesEvent(params: MovieListParams(genre: initialCategory))),
       child: _BrowseScreenContent(initialCategory: initialCategory),
     );
   }
@@ -38,7 +34,6 @@ class _BrowseScreenContent extends StatefulWidget {
 class _BrowseScreenContentState extends State<_BrowseScreenContent> {
   final ScrollController _scrollController = ScrollController();
 
-  // Categories List
   final List<String> _categories = [
     'Action',
     'Drama',
@@ -72,33 +67,25 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
     final currentScroll = _scrollController.position.pixels;
 
     if (currentScroll >= maxScroll * 0.9) {
-      // Load next page with the CURRENT category
       context.read<MoviesBloc>().add(
-        GetMoviesEvent(
-          params: MovieListParams(genre: _selectedCategory),
-        ),
+        GetMoviesEvent(params: MovieListParams(genre: _selectedCategory)),
       );
     }
   }
 
-  // --- Filter Logic ---
   void _onCategorySelected(String category) {
     setState(() {
       if (_selectedCategory == category) {
-        _selectedCategory = null; // Deselect (Show all)
+        _selectedCategory = null;
       } else {
-        _selectedCategory = category; // Select new
+        _selectedCategory = category;
       }
     });
 
-    // 1. Reset the list (Clear old data & reset page to 1)
     context.read<MoviesBloc>().add(ResetSearchEvent());
 
-    // 2. Fetch new data
     context.read<MoviesBloc>().add(
-      GetMoviesEvent(
-        params: MovieListParams(genre: _selectedCategory),
-      ),
+      GetMoviesEvent(params: MovieListParams(genre: _selectedCategory)),
     );
   }
 
@@ -112,7 +99,6 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // --- Category Bar ---
             SliverAppBar(
               backgroundColor: AppColors.mainBackground,
               automaticallyImplyLeading: false,
@@ -121,13 +107,14 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
               title: _buildCategoryList(),
             ),
 
-            // --- Movie Grid (Reactive) ---
             BlocBuilder<MoviesBloc, MoviesState>(
               builder: (context, state) {
                 if (state is MoviesInitial || state is MoviesLoading) {
                   return const SliverFillRemaining(
                     child: Center(
-                      child: CircularProgressIndicator(color: AppColors.secondaryColor),
+                      child: CircularProgressIndicator(
+                        color: AppColors.secondaryColor,
+                      ),
                     ),
                   );
                 }
@@ -159,17 +146,19 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
                   return SliverPadding(
                     padding: const EdgeInsets.all(15),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.65,
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.65,
+                            crossAxisSpacing: 15,
+                            mainAxisSpacing: 15,
+                          ),
                       delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          // Loading Spinner at bottom
+                        (context, index) {
                           if (index >= state.movies.length) {
-                            return const Center(child: CircularProgressIndicator());
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
 
                           final movie = state.movies[index];
@@ -213,10 +202,14 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.secondaryColor : AppColors.headerBackground,
+                  color: isSelected
+                      ? AppColors.secondaryColor
+                      : AppColors.headerBackground,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? AppColors.mainBackground : Colors.transparent,
+                    color: isSelected
+                        ? AppColors.mainBackground
+                        : Colors.transparent,
                     width: 1,
                   ),
                 ),

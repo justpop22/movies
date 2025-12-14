@@ -4,7 +4,7 @@ class MovieCastModel extends MovieCast {
   const MovieCastModel({
     required super.name,
     required super.characterName,
-    super.urlSmallImage
+    super.urlSmallImage,
   });
 
   factory MovieCastModel.fromJson(Map<String, dynamic> json) {

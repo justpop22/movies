@@ -24,7 +24,9 @@ class MovieRepositoryImpl extends MovieRepository {
   });
 
   @override
-  Future<Either<Failure, MovieEntity>> getMoviesList({required MovieListParams params}) async {
+  Future<Either<Failure, MovieEntity>> getMoviesList({
+    required MovieListParams params,
+  }) async {
     if (await networkInfo.isConnected!) {
       try {
         final remoteMovies = await remoteDataSource.getMoviesList(params);
@@ -42,6 +44,7 @@ class MovieRepositoryImpl extends MovieRepository {
       }
     }
   }
+
   @override
   Future<Either<Failure, MovieDetailEntity>> getMovieDetails({
     required MovieDetailParams params,
@@ -57,6 +60,7 @@ class MovieRepositoryImpl extends MovieRepository {
       return Left(Failure(errMessagge: "No Internet Connection"));
     }
   }
+
   Future<Either<Failure, MovieSuggestionEntity>> getMovieSuggestions({
     required MovieSuggestionParams params,
   }) async {

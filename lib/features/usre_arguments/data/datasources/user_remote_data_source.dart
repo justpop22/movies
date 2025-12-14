@@ -29,12 +29,13 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   String get _uid {
     final user = firebaseAuth.currentUser;
     if (user == null) {
-      throw ServerException(ErrorModel(status: 401, errorMessage: "User not logged in"));
+      throw ServerException(
+        ErrorModel(status: 401, errorMessage: "User not logged in"),
+      );
     }
     return user.uid;
   }
 
-  // Convert Entity to Model for JSON serialization
   MovieModel _toModel(MovieSubEntity entity) {
     return MovieModel(
       id: entity.id,
@@ -57,7 +58,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           .doc(movie.id.toString())
           .set(_toModel(movie).toJson());
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -71,7 +74,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           .doc(movieId.toString())
           .delete();
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -88,7 +93,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           .doc(movie.id.toString())
           .set(data);
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -102,7 +109,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           .doc(movieId.toString())
           .delete();
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -116,9 +125,12 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       });
       return user;
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
+
   @override
   Future<List<MovieModel>> getFavorites() async {
     try {
@@ -132,7 +144,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           .map((doc) => MovieModel.fromJson(doc.data()))
           .toList();
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -143,14 +157,16 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           .collection('users')
           .doc(_uid)
           .collection('history')
-          .orderBy('timestamp', descending: true) // Sort by newest
+          .orderBy('timestamp', descending: true)
           .get();
 
       return snapshot.docs
           .map((doc) => MovieModel.fromJson(doc.data()))
           .toList();
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -161,12 +177,13 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       if (doc.exists) {
         return UserModel.fromJson(doc.data()!);
       } else {
-        // Fallback if Firestore doc doesn't exist (e.g. only Auth exists)
         final user = firebaseAuth.currentUser!;
         return UserModel.fromFirebaseUser(user);
       }
     } catch (e) {
-      throw ServerException(ErrorModel(status: 500, errorMessage: e.toString()));
+      throw ServerException(
+        ErrorModel(status: 500, errorMessage: e.toString()),
+      );
     }
   }
 }

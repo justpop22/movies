@@ -3,11 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/services/service_locater.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/widgets/custom_btn.dart';
-
 import '../../../features/auth/presentation/cubit/auth_bloc.dart';
 import '../../../features/auth/presentation/cubit/auth_event.dart';
 import '../../../features/auth/presentation/cubit/auth_state.dart';
-
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -47,7 +45,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -59,9 +56,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(locale.resetPassword),
-            ),
+            appBar: AppBar(title: Text(locale.resetPassword)),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
@@ -77,7 +72,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Center(
-                            child: Image.asset("assets/images/reset_password.png"),
+                            child: Image.asset(
+                              "assets/images/reset_password.png",
+                            ),
                           ),
                           TextFormField(
                             controller: _emailController,

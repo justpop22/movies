@@ -39,6 +39,7 @@ class UserModel extends UserEntity {
       'avatarId': avatarId,
     };
   }
+
   UserModel copyWith({
     String? uid,
     String? email,

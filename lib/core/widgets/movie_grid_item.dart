@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/theme/app_colors.dart';
-import '../../modules/home/pages/mvoei_details.dart';
+import '../../modules/home/pages/movie_details.dart';
 
 class MovieGridItem extends StatelessWidget {
-  final int movieId; // 1. Add ID to identify the movie
+  final int movieId;
   final String imagePath;
   final String rating;
 
   const MovieGridItem({
     super.key,
-    required this.movieId, // 2. Require it in the constructor
+    required this.movieId,
     required this.imagePath,
     required this.rating,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 3. Wrap everything in GestureDetector to handle clicks
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -32,28 +31,22 @@ class MovieGridItem extends StatelessWidget {
           image: DecorationImage(
             image: NetworkImage(imagePath),
             fit: BoxFit.cover,
-            onError: (exception, stackTrace) {
-            },
+            onError: (exception, stackTrace) {},
           ),
         ),
         child: Stack(
           children: [
-            // Gradient Overlay
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
                 ),
               ),
             ),
 
-            // Rate Badge
             Positioned(
               top: 8,
               left: 8,

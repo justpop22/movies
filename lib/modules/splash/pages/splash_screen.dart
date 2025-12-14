@@ -1,10 +1,9 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
-import '../../../core/services/service_locater.dart'; // To access 'sl'
+import '../../../core/services/service_locater.dart';
 import '../../../core/theme/app_colors.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -47,15 +46,12 @@ class SplashScreen extends StatelessWidget {
           const Spacer(),
           FadeInUpBig(
             onFinish: (direction) {
-              // 1. Get current user directly from Service Locator
               final user = sl<FirebaseAuth>().currentUser;
 
-              // 2. Decide logic
               final nextRoute = CacheManager.isFirstTime
                   ? RouteName.onBoarding
                   : (user == null ? RouteName.login : RouteName.layout);
 
-              // 3. Navigate
               Navigator.pushReplacementNamed(context, nextRoute);
             },
             delay: const Duration(seconds: 2),

@@ -1,22 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// This is the complete and corrected CacheManager class.
-/// It is safe to use and will not crash your app.
 class CacheManager {
   static late SharedPreferences _prefs;
   static const String _keyIsFirstTime = 'isFirstTime';
 
-  /// Initializes the SharedPreferences instance.
-  /// Must be called once at app startup in main().
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  // --- Specific Logic for First Time Flow ---
-
-  /// [CRITICAL FIX]
-  /// A static GETTER to check if it's the first app launch.
-  /// This prevents the app from crashing on startup.
   static bool get isFirstTime {
     return _prefs.getBool(_keyIsFirstTime) ?? true;
   }
@@ -24,7 +15,6 @@ class CacheManager {
   static Future<void> markFirstTimeComplete() async {
     await _prefs.setBool(_keyIsFirstTime, false);
   }
-
 
   static Future<void> set({required String key, required dynamic value}) async {
     if (value is String) {

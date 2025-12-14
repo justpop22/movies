@@ -11,7 +11,9 @@ class GetMovieSuggestions {
 
   GetMovieSuggestions({required this.repository});
 
-  Future<Either<Failure, MovieSuggestionEntity>> call({required MovieSuggestionParams params}) {
+  Future<Either<Failure, MovieSuggestionEntity>> call({
+    required MovieSuggestionParams params,
+  }) {
     return repository.getMovieSuggestions(params: params);
   }
 }

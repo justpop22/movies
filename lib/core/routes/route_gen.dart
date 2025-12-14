@@ -3,7 +3,7 @@ import 'package:movies/modules/home/pages/main_layout.dart';
 import '../../modules/auth/pages/forget_password_screen.dart';
 import '../../modules/auth/pages/login_screen.dart';
 import '../../modules/auth/pages/register_screen.dart';
-import '../../modules/home/pages/mvoei_details.dart';
+import '../../modules/home/pages/movie_details.dart';
 import '../../modules/onboarding/onboarding.dart';
 import '../../modules/splash/pages/splash_screen.dart';
 import 'app_route_name.dart';
@@ -26,39 +26,44 @@ class RouteGen {
           },
         );
 
-      case RouteName.login :
+      case RouteName.login:
         return PageRouteBuilder(
           transitionDuration: Duration(seconds: 1),
           pageBuilder: (context, animation, secondaryAnimation) {
             return LoginScreen();
-          },);
+          },
+        );
 
-      case RouteName.register :
+      case RouteName.register:
         return PageRouteBuilder(
           transitionDuration: Duration(seconds: 1),
           pageBuilder: (context, animation, secondaryAnimation) {
             return RegisterScreen();
-          },);
+          },
+        );
 
-      case RouteName.forgetPassword :
+      case RouteName.forgetPassword:
         return PageRouteBuilder(
           transitionDuration: Duration(seconds: 1),
           pageBuilder: (context, animation, secondaryAnimation) {
             return ForgetPasswordScreen();
-          },);
+          },
+        );
 
-        case RouteName.layout :
+      case RouteName.layout:
         return PageRouteBuilder(
           transitionDuration: Duration(seconds: 1),
           pageBuilder: (context, animation, secondaryAnimation) {
             return MainLayout();
-          },);
-        case RouteName.movieDetail:
-          return PageRouteBuilder(
-            transitionDuration: Duration(seconds: 1),
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return MovieDetailsScreen(movieId: settings.arguments as int,);
-            },);
+          },
+        );
+      case RouteName.movieDetail:
+        return PageRouteBuilder(
+          transitionDuration: Duration(seconds: 1),
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return MovieDetailsScreen(movieId: settings.arguments as int);
+          },
+        );
 
       default:
         return PageRouteBuilder(

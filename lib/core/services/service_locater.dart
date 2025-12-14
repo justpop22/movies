@@ -64,28 +64,30 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthConsumer>(
     () => FirebaseAuthConsumer(firebaseAuth: sl()),
   );
-  sl.registerLazySingleton<CacheHelper>(
-    () => CacheHelper(),
+  sl.registerLazySingleton<CacheHelper>(() => CacheHelper());
+  sl.registerFactory(
+    () => AuthBloc(
+      loginUseCase: sl(),
+      signUpUseCase: sl(),
+      logoutUseCase: sl(),
+      getCurrentUserUseCase: sl(),
+      forgotPasswordUseCase: sl(),
+      loginWithGoogleUseCase: sl(),
+      deleteAccountUseCase: sl(),
+    ),
   );
-  sl.registerFactory(() => AuthBloc(
-    loginUseCase: sl(),
-    signUpUseCase: sl(),
-    logoutUseCase: sl(),
-    getCurrentUserUseCase: sl(),
-    forgotPasswordUseCase: sl(),
-    loginWithGoogleUseCase: sl(),
-    deleteAccountUseCase: sl(),
-  ));
-  sl.registerFactory(() => UserBloc(
-    addFavorite: sl(),
-    removeFavorite: sl(),
-    addHistory: sl(),
-    removeHistory: sl(),
-    updateUser: sl(),
-    getFavorites: sl(),
-    getHistory: sl(),
-    getUserInfo: sl(),
-  ));
+  sl.registerFactory(
+    () => UserBloc(
+      addFavorite: sl(),
+      removeFavorite: sl(),
+      addHistory: sl(),
+      removeHistory: sl(),
+      updateUser: sl(),
+      getFavorites: sl(),
+      getHistory: sl(),
+      getUserInfo: sl(),
+    ),
+  );
 
   sl.registerLazySingleton(() => LoginUseCase(repository: sl()));
   sl.registerLazySingleton(() => SignUpUseCase(repository: sl()));
@@ -104,14 +106,12 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetWatchHistoryUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetUserInfoUseCase(repository: sl()));
 
-
-
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
   sl.registerLazySingleton<UserRepository>(
-        () => UserRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+    () => UserRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -123,7 +123,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<UserRemoteDataSource>(
-        () => UserRemoteDataSourceImpl(firestore: sl(), firebaseAuth: sl()),
+    () => UserRemoteDataSourceImpl(firestore: sl(), firebaseAuth: sl()),
   );
 
   sl.registerFactory(() => MoviesBloc(getMoviesList: sl()));

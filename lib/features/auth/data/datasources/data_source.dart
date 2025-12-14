@@ -177,6 +177,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     }
   }
+
   @override
   Future<void> forgotPassword(String email) async {
     try {

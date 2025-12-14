@@ -32,108 +32,74 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     required this.getHistory,
     required this.getUserInfo,
   }) : super(UserInitial()) {
-
-    // --- FAVORITES ---
     on<AddFavoriteEvent>((event, emit) async {
       final result = await addFavorite(event.movie);
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (r) {
-          emit(const UserActionSuccess("Added to Favorites"));
-          // Refresh list to update UI immediately
-          add( GetFavoritesEvent());
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (r) {
+        emit(const UserActionSuccess("Added to Favorites"));
+
+        add(GetFavoritesEvent());
+      });
     });
 
     on<RemoveFavoriteEvent>((event, emit) async {
       final result = await removeFavorite(event.movieId);
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (r) {
-          emit(const UserActionSuccess("Removed from Favorites"));
-          add( GetFavoritesEvent()); // Refresh list
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (r) {
+        emit(const UserActionSuccess("Removed from Favorites"));
+        add(GetFavoritesEvent());
+      });
     });
 
     on<GetFavoritesEvent>((event, emit) async {
-      // Don't emit loading if we already have data (prevents flickering)
       final currentUserData = _currentUserData;
 
       final result = await getFavorites();
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (movies) {
-          // Merge new favorites with existing user/history data
-          emit(currentUserData.copyWith(favorites: movies));
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (movies) {
+        emit(currentUserData.copyWith(favorites: movies));
+      });
     });
 
-    // --- HISTORY ---
     on<AddHistoryEvent>((event, emit) async {
       final result = await addHistory(event.movie);
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (r) {
-          // Optional: Emit success or just refresh
-          add( GetHistoryEvent());
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (r) {
+        add(GetHistoryEvent());
+      });
     });
 
     on<RemoveHistoryEvent>((event, emit) async {
       final result = await removeHistory(event.movieId);
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (r) {
-          emit(const UserActionSuccess("Removed from History"));
-          add( GetHistoryEvent()); // Refresh list
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (r) {
+        emit(const UserActionSuccess("Removed from History"));
+        add(GetHistoryEvent());
+      });
     });
 
     on<GetHistoryEvent>((event, emit) async {
       final currentUserData = _currentUserData;
 
       final result = await getHistory();
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (movies) {
-          // Merge new history with existing user/favorites data
-          emit(currentUserData.copyWith(watchHistory: movies));
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (movies) {
+        emit(currentUserData.copyWith(watchHistory: movies));
+      });
     });
 
-    // --- USER INFO ---
     on<GetUserInfoEvent>((event, emit) async {
       final currentUserData = _currentUserData;
 
       final result = await getUserInfo();
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (user) {
-          emit(currentUserData.copyWith(user: user));
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (user) {
+        emit(currentUserData.copyWith(user: user));
+      });
     });
 
     on<UpdateUserEvent>((event, emit) async {
       emit(UserLoading());
       final result = await updateUser(event.user);
-      result.fold(
-            (l) => emit(UserError(l.errMessagge)),
-            (user) {
-          // Update the user inside the main state object
-          emit(_currentUserData.copyWith(user: user));
-        },
-      );
+      result.fold((l) => emit(UserError(l.errMessagge)), (user) {
+        emit(_currentUserData.copyWith(user: user));
+      });
     });
   }
 
-  // Helper to get current state data or default empty
   UserDataLoaded get _currentUserData {
     if (state is UserDataLoaded) {
       return state as UserDataLoaded;

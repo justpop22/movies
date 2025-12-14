@@ -3,7 +3,7 @@ import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_btn.dart';
-import '../onboarding.dart'; // contains globalCurrentPage
+import '../onboarding.dart';
 
 class OnboardingScreen4 extends StatelessWidget {
   final PageController controller;
@@ -21,29 +21,6 @@ class OnboardingScreen4 extends StatelessWidget {
         children: [
           Image.asset("assets/images/badboys.png", fit: BoxFit.cover),
 
-          // Container(
-          //   decoration: BoxDecoration(
-          //     gradient: LinearGradient(
-          //       begin: Alignment.topCenter,
-          //       end: Alignment.bottomCenter,
-          //       colors: [
-          //         Colors.lightBlue.withOpacity(0.2),
-          //         const Color(0xff08425000).withOpacity(0.5),
-          //       ],
-          //     ),
-          //   ),
-          // ),Container(
-          //   decoration: BoxDecoration(
-          //     gradient: LinearGradient(
-          //       begin: Alignment.topCenter,
-          //       end: Alignment.bottomCenter,
-          //       colors: [
-          //         Colors.lightBlue.withOpacity(0.2),
-          //         const Color(0xff08425000).withOpacity(0.5),
-          //       ],
-          //     ),
-          //   ),
-          // ),
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
@@ -83,9 +60,6 @@ class OnboardingScreen4 extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // ————————————————
-                    // GLOBAL PAGE LISTENER
-                    // ————————————————
                     ValueListenableBuilder<int>(
                       valueListenable: globalCurrentPage,
                       builder: (context, current, _) {

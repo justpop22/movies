@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../core/params/signup_params.dart';
 import '../../../../core/provider/app_provider.dart';
 import '../../../../core/routes/app_route_name.dart';
@@ -14,7 +13,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../features/auth/presentation/cubit/auth_bloc.dart';
 import '../../../features/auth/presentation/cubit/auth_event.dart';
 import '../../../features/auth/presentation/cubit/auth_state.dart';
-
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -35,7 +33,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isShowPassword = true;
   int selectedAvatarIndex = 0;
 
-  // ✅ MOVED: Define the avatars list here (since AuthServices is deleted)
   final List<String> _avatars = [
     'assets/logo/profile1.png',
     'assets/logo/profile2.png',
@@ -79,21 +76,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            Navigator.pushNamedAndRemoveUntil(context, RouteName.login, (route) => false);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteName.login,
+              (route) => false,
+            );
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Account Created! Please Login."), backgroundColor: Colors.green),
+              const SnackBar(
+                content: Text("Account Created! Please Login."),
+                backgroundColor: Colors.green,
+              ),
             );
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(locale.register),
-            ),
+            appBar: AppBar(title: Text(locale.register)),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
@@ -109,14 +114,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           const Spacer(),
 
-                          // --- Avatar List ---
                           SizedBox(
                             height: 100,
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              itemCount: _avatars.length, // ✅ Use local list
-                              separatorBuilder: (context, index) => const SizedBox(width: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              itemCount: _avatars.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(width: 10),
                               itemBuilder: (context, index) {
                                 final isSelected = selectedAvatarIndex == index;
                                 return GestureDetector(
@@ -129,12 +136,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: isSelected
-                                          ? Border.all(color: AppColors.secondaryColor, width: 3)
+                                          ? Border.all(
+                                              color: AppColors.secondaryColor,
+                                              width: 3,
+                                            )
                                           : null,
                                     ),
                                     child: CircleAvatar(
                                       radius: 35,
-                                      backgroundImage: AssetImage(_avatars[index]), // ✅ Use local list
+                                      backgroundImage: AssetImage(
+                                        _avatars[index],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -142,20 +154,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
 
-                          // ... (The rest of your build method remains exactly the same) ...
-
                           const SizedBox(height: 8),
                           const Text(
                             "Choose Avatar",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const Spacer(),
 
-                          // Name Input
                           TextFormField(
                             controller: _nameController,
                             validator: (value) {
-                              if (value == null || value.isEmpty) return "Please enter name";
+                              if (value == null || value.isEmpty)
+                                return "Please enter name";
                               return null;
                             },
                             decoration: InputDecoration(
@@ -165,14 +178,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 12),
 
-                          // Email Input
                           TextFormField(
                             controller: _emailController,
                             validator: (value) {
                               bool isEmail = RegExp(
-                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(value ?? "");
-                              if (value == null || value.isEmpty) return "Please enter email";
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                              ).hasMatch(value ?? "");
+                              if (value == null || value.isEmpty)
+                                return "Please enter email";
                               if (!isEmail) return "Please enter valid email";
                               return null;
                             },
@@ -183,13 +196,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 12),
 
-                          // Password Input
                           TextFormField(
                             controller: _passwordController,
                             obscureText: isShowPassword,
                             validator: (value) {
-                              if (value == null || value.isEmpty) return "Please enter password";
-                              if (value.length < 6) return "Must be at least 6 characters";
+                              if (value == null || value.isEmpty)
+                                return "Please enter password";
+                              if (value.length < 6)
+                                return "Must be at least 6 characters";
                               return null;
                             },
                             decoration: InputDecoration(
@@ -201,18 +215,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     isShowPassword = !isShowPassword;
                                   });
                                 },
-                                child: Icon(isShowPassword ? Icons.visibility_off : Icons.visibility),
+                                child: Icon(
+                                  isShowPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(height: 12),
 
-                          // Re-Password Input
                           TextFormField(
                             controller: _rePasswordController,
                             obscureText: isShowPassword,
                             validator: (value) {
-                              if (value != _passwordController.text) return "Passwords do not match";
+                              if (value != _passwordController.text)
+                                return "Passwords do not match";
                               return null;
                             },
                             decoration: InputDecoration(
@@ -222,13 +240,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 12),
 
-                          // Phone Input
                           TextFormField(
                             controller: _phoneController,
                             keyboardType: TextInputType.phone,
                             validator: (value) {
-                              if (value == null || value.isEmpty) return "Please enter phone number";
-                              if (value.length != 11) return "Phone number must be 11 digits";
+                              if (value == null || value.isEmpty)
+                                return "Please enter phone number";
+                              if (value.length != 11)
+                                return "Phone number must be 11 digits";
                               return null;
                             },
                             decoration: InputDecoration(
@@ -239,7 +258,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 12),
                           const Spacer(),
 
-                          // Create Account Button
                           CustomBtn(
                             isExpanded: true,
                             isLoading: state is AuthLoading,
@@ -263,7 +281,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const Spacer(),
 
-                          // Login Link
                           Text.rich(
                             TextSpan(
                               text: locale.haveAccount,
@@ -278,15 +295,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Navigator.pushReplacementNamed(context, RouteName.login);
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        RouteName.login,
+                                      );
                                     },
-                                )
+                                ),
                               ],
                             ),
                           ),
                           const Spacer(),
 
-                          // Language Toggle
                           AnimatedToggleSwitch<String>.rolling(
                             current: appProvider.local,
                             values: const ["en", "ar"],

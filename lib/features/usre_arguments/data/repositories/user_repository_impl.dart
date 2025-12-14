@@ -93,6 +93,7 @@ class UserRepositoryImpl implements UserRepository {
       return Left(Failure(errMessagge: "No Internet Connection"));
     }
   }
+
   @override
   Future<Either<Failure, List<MovieSubEntity>>> getFavorites() async {
     if (await networkInfo.isConnected!) {

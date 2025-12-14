@@ -3,7 +3,7 @@ import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_btn.dart';
-import '../onboarding.dart'; // contains globalCurrentPage
+import '../onboarding.dart';
 
 class OnboardingScreen2 extends StatelessWidget {
   final PageController controller;
@@ -73,9 +73,6 @@ class OnboardingScreen2 extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // ————————————————
-                    // GLOBAL PAGE LISTENER
-                    // ————————————————
                     ValueListenableBuilder<int>(
                       valueListenable: globalCurrentPage,
                       builder: (context, current, _) {

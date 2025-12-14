@@ -7,18 +7,13 @@ import 'package:movies/modules/onboarding/pages/onboarding_screen4.dart';
 import 'package:movies/modules/onboarding/pages/onboarding_screen5.dart';
 import 'package:movies/modules/onboarding/pages/onboarding_screen6.dart';
 
-import '../../core/theme/app_colors.dart';
-
 ValueNotifier<int> globalCurrentPage = ValueNotifier(0);
-
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
 
-
   @override
   State<OnBoarding> createState() => _OnBoardingState();
-
 }
 
 class _OnBoardingState extends State<OnBoarding> {
@@ -32,7 +27,7 @@ class _OnBoardingState extends State<OnBoarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:PageView(
+      body: PageView(
         controller: _controller,
         onPageChanged: (index) {
           globalCurrentPage.value = index;
@@ -47,6 +42,5 @@ class _OnBoardingState extends State<OnBoarding> {
         ],
       ),
     );
-
   }
 }

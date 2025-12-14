@@ -6,7 +6,6 @@ class SignUpParams {
   final String phone;
   final int avatarId;
 
-
   const SignUpParams({
     required this.avatarId,
     required this.name,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../theme/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -42,7 +41,10 @@ class CustomTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.secondaryColor, width: 1),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 1,
+          ),
         ),
       ),
     );

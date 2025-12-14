@@ -11,7 +11,6 @@ class AvatarSelectionSheet extends StatelessWidget {
     required this.onAvatarSelected,
   });
 
-  // ✅ Defined locally to remove dependency on AuthServices
   static const List<String> _defaultAvatars = [
     'assets/logo/profile1.png',
     'assets/logo/profile2.png',
@@ -35,7 +34,6 @@ class AvatarSelectionSheet extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Drag Handle
           Container(
             width: 40,
             height: 5,
@@ -46,20 +44,19 @@ class AvatarSelectionSheet extends StatelessWidget {
           ),
           const SizedBox(height: 15),
 
-          // Title
           const Text(
             "Pick Avatar",
             style: TextStyle(
-                color: AppColors.secondaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold),
+              color: AppColors.secondaryColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 20),
 
-          // Grid
           Expanded(
             child: GridView.builder(
-              itemCount: _defaultAvatars.length, // ✅ Uses local list
+              itemCount: _defaultAvatars.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 crossAxisSpacing: 15,
@@ -67,7 +64,7 @@ class AvatarSelectionSheet extends StatelessWidget {
                 childAspectRatio: 1,
               ),
               itemBuilder: (context, index) {
-                final avatarPath = _defaultAvatars[index]; // ✅ Uses local list
+                final avatarPath = _defaultAvatars[index];
                 final isSelected = avatarPath == currentAvatarPath;
 
                 return GestureDetector(
@@ -80,7 +77,10 @@ class AvatarSelectionSheet extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: isSelected
-                          ? Border.all(color: AppColors.secondaryColor, width: 4)
+                          ? Border.all(
+                              color: AppColors.secondaryColor,
+                              width: 4,
+                            )
                           : null,
                     ),
                     child: Padding(

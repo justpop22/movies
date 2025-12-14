@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-
 import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failure.dart';
@@ -86,20 +85,21 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(Failure(errMessagge: "No Internet Connection"));
     }
   }
+
   @override
   Future<Either<Failure, UserEntity>> signInWithGoogle() async {
     if (await networkInfo.isConnected) {
       try {
         final user = await remoteDataSource.signInWithGoogle();
         return Right(user);
-    }
-      on ServerException catch (e) {
+      } on ServerException catch (e) {
         return Left(Failure(errMessagge: e.errorModel.errorMessage));
       }
     } else {
       return Left(Failure(errMessagge: "No Internet Connection"));
     }
   }
+
   @override
   Future<Either<Failure, void>> forgotPassword(String email) async {
     if (await networkInfo.isConnected) {

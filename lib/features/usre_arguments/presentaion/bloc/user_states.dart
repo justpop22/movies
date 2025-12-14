@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import '../../../auth/domain/enitiy/user_entity.dart';
-// Ensure this import points to where MovieSubEntity is defined
 import '../../../movies/domain/entities/sub_entity/movie.dart';
 
 abstract class UserState extends Equatable {
@@ -30,7 +29,6 @@ class UserError extends UserState {
   List<Object> get props => [message];
 }
 
-// ✅ UPDATED: This state now holds User + Favorites + History
 class UserDataLoaded extends UserState {
   final UserEntity? user;
   final List<MovieSubEntity> favorites;
@@ -42,7 +40,6 @@ class UserDataLoaded extends UserState {
     this.watchHistory = const [],
   });
 
-  // Helper to update specific fields without losing others
   UserDataLoaded copyWith({
     UserEntity? user,
     List<MovieSubEntity>? favorites,
@@ -59,8 +56,6 @@ class UserDataLoaded extends UserState {
   List<Object?> get props => [user, favorites, watchHistory];
 }
 
-// You can keep these if other screens use them,
-// but ProfileScreen will primarily use UserDataLoaded.
 class UserInfoUpdated extends UserState {
   final UserEntity user;
   const UserInfoUpdated(this.user);

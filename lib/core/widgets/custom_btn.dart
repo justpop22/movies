@@ -34,12 +34,9 @@ class CustomBtn extends StatelessWidget {
       width: isExpanded ? double.infinity : null,
       decoration: border
           ? BoxDecoration(
-        borderRadius: borderRadius,
-        border: Border.all(
-          color: AppColors.secondaryColor,
-          width: 2,
-        ),
-      )
+              borderRadius: borderRadius,
+              border: Border.all(color: AppColors.secondaryColor, width: 2),
+            )
           : null,
       child: CupertinoButton(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -78,8 +75,9 @@ class CustomBtn extends StatelessWidget {
             ),
           ),
           duration: const Duration(milliseconds: 200),
-          crossFadeState:
-          isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: isLoading
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
         ),
       ),
     );

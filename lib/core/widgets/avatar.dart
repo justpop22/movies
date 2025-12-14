@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class AvatarPicker extends StatefulWidget {
   final List<String> avatarList;
   final double avatarRadius;
-  final String? initialAvatar; // Optional: To start with a specific avatar
-  final Function(String) onAvatarChanged; // Callback to return data
+  final String? initialAvatar;
+  final Function(String) onAvatarChanged;
 
   const AvatarPicker({
     super.key,
@@ -21,16 +21,14 @@ class AvatarPicker extends StatefulWidget {
 class _AvatarPickerState extends State<AvatarPicker> {
   late PageController _pageController;
   late int initialPage;
-  late String selectedAvatar; // Local state to track selection
+  late String selectedAvatar;
 
   @override
   void initState() {
     super.initState();
-    // Initialize local state
+
     selectedAvatar = widget.initialAvatar ?? widget.avatarList[0];
 
-    // Notify parent of initial selection immediately
-    // (Schedule it to run after build to avoid errors)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onAvatarChanged(selectedAvatar);
     });
@@ -70,13 +68,14 @@ class _AvatarPickerState extends State<AvatarPicker> {
           int actualIndex = index % widget.avatarList.length;
           String currentAvatarPath = widget.avatarList[actualIndex];
 
-          double page = _pageController.hasClients ? _pageController.page ?? 0 : 0;
+          double page = _pageController.hasClients
+              ? _pageController.page ?? 0
+              : 0;
           double distance = (index - page).abs();
 
           double scale = 1.0 - (distance * 0.2);
           if (scale < 1.0) scale = 0.6;
 
-          // Highlight the selected one
           if (selectedAvatar == currentAvatarPath) {
             scale = 1.1;
           }

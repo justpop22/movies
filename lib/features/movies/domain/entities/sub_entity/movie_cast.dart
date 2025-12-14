@@ -1,4 +1,4 @@
-class MovieCast  {
+class MovieCast {
   final String name;
   final String characterName;
   final String? urlSmallImage;

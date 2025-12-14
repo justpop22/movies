@@ -11,7 +11,10 @@ class MovieLocalDataSource {
 
   Future<void> cacheMovies(MovieList? moviesToCache) async {
     if (moviesToCache != null) {
-      await cache.saveData(key: key, value: json.encode(moviesToCache.toJson()));
+      await cache.saveData(
+        key: key,
+        value: json.encode(moviesToCache.toJson()),
+      );
     } else {
       throw CacheException(errorMessage: "No Internet Connection");
     }
@@ -25,5 +28,4 @@ class MovieLocalDataSource {
       throw CacheException(errorMessage: "No Cached Data Found");
     }
   }
-
 }

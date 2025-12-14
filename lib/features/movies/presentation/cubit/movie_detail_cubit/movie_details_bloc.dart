@@ -16,58 +16,47 @@ class MovieDetailsBloc extends Bloc<MovieDetailsEvent, MovieDetailsState> {
     required this.getMovieDetails,
     required this.getMovieSuggestions,
   }) : super(MovieDetailsInitial()) {
-
     on<GetMovieDetailsEvent>(_onGetMovieDetails);
   }
 
   Future<void> _onGetMovieDetails(
-      GetMovieDetailsEvent event,
-      Emitter<MovieDetailsState> emit,
-      ) async {
+    GetMovieDetailsEvent event,
+    Emitter<MovieDetailsState> emit,
+  ) async {
     emit(MovieDetailsLoading());
 
-    // 1. Fetch Details
     final detailsResult = await getMovieDetails.call(
       params: MovieDetailParams(movieId: event.id),
     );
 
-    // 2. Fetch Suggestions
     final suggestionsResult = await getMovieSuggestions.call(
       params: MovieSuggestionParams(movieId: event.id),
     );
 
-    // 3. Combine Logic
     detailsResult.fold(
-          (failure) => emit(MovieDetailsFailure(failure.errMessagge)),
-          (movieDetail) {
-
-        // ✅ FIX: Extract the list safely using fold()
-        // We initialize an empty list first
+      (failure) => emit(MovieDetailsFailure(failure.errMessagge)),
+      (movieDetail) {
         List<MovieSuggestionSubEntity> finalSuggestions = [];
 
         suggestionsResult.fold(
-              (failure) {
-            // If suggestions fail, we just keep the empty list (don't show error)
+          (failure) {
             finalSuggestions = [];
           },
-              (successData) {
-            // If success, we extract the list based on what your UseCase returns
-            // Option A: If successData is the LIST itself
+          (successData) {
             if (successData is List<MovieSuggestionSubEntity>) {
               finalSuggestions = successData as List<MovieSuggestionSubEntity>;
-            }
-            // Option B: If successData is the WRAPPER (MovieSuggestionEntity)
-            // We assume your wrapper has a property called .movies or .list
-            else if (successData is MovieSuggestionEntity) {
+            } else if (successData is MovieSuggestionEntity) {
               finalSuggestions = successData.movies;
             }
           },
         );
 
-        emit(MovieDetailsLoaded(
-          movieDetail: movieDetail,
-          suggestions: finalSuggestions,
-        ));
+        emit(
+          MovieDetailsLoaded(
+            movieDetail: movieDetail,
+            suggestions: finalSuggestions,
+          ),
+        );
       },
     );
   }

@@ -5,10 +5,7 @@ class ProfileTabsDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
 
-  ProfileTabsDelegate({
-    required this.child,
-    this.height = 80.0,
-  });
+  ProfileTabsDelegate({required this.child, this.height = 80.0});
 
   @override
   double get minExtent => height;
@@ -17,11 +14,12 @@ class ProfileTabsDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: AppColors.headerBackground,
-      child: child,
-    );
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: AppColors.headerBackground, child: child);
   }
 
   @override

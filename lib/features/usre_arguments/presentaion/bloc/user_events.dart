@@ -48,6 +48,9 @@ class UpdateUserEvent extends UserEvent {
   @override
   List<Object> get props => [user];
 }
+
 class GetUserInfoEvent extends UserEvent {}
+
 class GetHistoryEvent extends UserEvent {}
+
 class GetFavoritesEvent extends UserEvent {}

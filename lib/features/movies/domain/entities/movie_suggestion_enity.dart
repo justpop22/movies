@@ -2,7 +2,5 @@ import 'package:movies/features/movies/domain/entities/sub_entity/movie_suggesti
 
 class MovieSuggestionEntity {
   final List<MovieSuggestionSubEntity> movies;
-  MovieSuggestionEntity({
-    required this.movies,
-});
+  MovieSuggestionEntity({required this.movies});
 }

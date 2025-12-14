@@ -1,8 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-// Adjust these imports to match your folder structure exactly
 import '../../../core/services/service_locater.dart';
 import '../../../core/params/movieparams.dart';
 import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
@@ -11,7 +9,7 @@ import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_stat
 import '../../../core/widgets/movie_grid_item.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../home/pages/main_layout.dart';
-import 'mvoei_details.dart';
+import 'movie_details.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,12 +19,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // 1. Bloc for the Top Carousel (Trending Movies)
   late MoviesBloc _trendingBloc;
   late final PageController _pageController;
   final ValueNotifier<int> _currentIndexNotifier = ValueNotifier(0);
 
-  // 2. List of Categories
   final List<String> _categories = [
     'Action',
     'Drama',
@@ -41,11 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize Trending Bloc (Trendy/Popular)
+
     _trendingBloc = sl<MoviesBloc>()
       ..add(GetMoviesEvent(params: MovieListParams(sortBy: 'download_count')));
 
-    // Increased viewportFraction to 0.8 to make the center poster wider
     _pageController = PageController(viewportFraction: 0.8, initialPage: 0);
   }
 
@@ -59,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Screen height helper
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -83,9 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ValueListenableBuilder<int>(
                           valueListenable: _currentIndexNotifier,
                           builder: (context, index, _) {
-                            final safeIndex = index.clamp(0, state.movies.length - 1);
+                            final safeIndex = index.clamp(
+                              0,
+                              state.movies.length - 1,
+                            );
                             final movie = state.movies[safeIndex];
-                            final imagePath = movie.largeCoverImage ?? movie.mediumCoverImage ?? "";
+                            final imagePath =
+                                movie.largeCoverImage ??
+                                movie.mediumCoverImage ??
+                                "";
 
                             return AnimatedSwitcher(
                               duration: const Duration(milliseconds: 500),
@@ -97,12 +97,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Image.network(
                                       imagePath,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_,__,___) => const SizedBox(),
+                                      errorBuilder: (_, __, ___) =>
+                                          const SizedBox(),
                                     ),
-                                  Container(color: Colors.black.withOpacity(0.4)),
+                                  Container(
+                                    color: Colors.black.withOpacity(0.4),
+                                  ),
                                   BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                                    child: Container(color: Colors.black.withOpacity(0.2)),
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 8.0,
+                                      sigmaY: 8.0,
+                                    ),
+                                    child: Container(
+                                      color: Colors.black.withOpacity(0.2),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -122,21 +130,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: Center(
                           child: Image.asset(
-                              "assets/images/Available.png",
+                            "assets/images/Available.png",
                             width: 250,
                             fit: BoxFit.contain,
                           ),
                         ),
                       ),
 
-
                       SizedBox(
-                        height: 350, // Keep your increased height
+                        height: 350,
                         child: BlocBuilder<MoviesBloc, MoviesState>(
                           bloc: _trendingBloc,
                           builder: (context, state) {
                             if (state is MoviesLoading) {
-                              return const Center(child: CircularProgressIndicator(color: AppColors.secondaryColor));
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.secondaryColor,
+                                ),
+                              );
                             }
                             if (state is MoviesLoaded) {
                               return PageView.builder(
@@ -148,33 +159,43 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemBuilder: (context, index) {
                                   final movie = state.movies[index];
 
-                                  // Scale Animation Logic
                                   return AnimatedBuilder(
                                     animation: _pageController,
                                     builder: (context, child) {
                                       double page = index.toDouble();
-                                      if (_pageController.position.haveDimensions) {
-                                        page = _pageController.page ?? index.toDouble();
+                                      if (_pageController
+                                          .position
+                                          .haveDimensions) {
+                                        page =
+                                            _pageController.page ??
+                                            index.toDouble();
                                       }
-                                      final double scale = (1 - (page - index).abs() * 0.15).clamp(0.85, 1.0);
+                                      final double scale =
+                                          (1 - (page - index).abs() * 0.15)
+                                              .clamp(0.85, 1.0);
 
                                       return Transform.scale(
                                         scale: scale,
                                         child: child,
                                       );
                                     },
-                                    // ✅ FIX: Wrap the child in GestureDetector
+
                                     child: GestureDetector(
                                       onTap: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => MovieDetailsScreen(movieId: movie.id),
+                                            builder: (context) =>
+                                                MovieDetailsScreen(
+                                                  movieId: movie.id,
+                                                ),
                                           ),
                                         );
                                       },
                                       child: _buildLargePoster(
-                                        movie.largeCoverImage ?? movie.mediumCoverImage ?? "",
+                                        movie.largeCoverImage ??
+                                            movie.mediumCoverImage ??
+                                            "",
                                         movie.rating.toString(),
                                       ),
                                     ),
@@ -191,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Center(
                           child: Image.asset(
                             "assets/images/Watch Now.png",
-                            width: 250, // Adjust height as needed
+                            width: 250,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -202,14 +223,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // --- SECTION 2: CATEGORY ROWS ---
             Padding(
               padding: const EdgeInsets.only(left: 20.0, top: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ..._categories.map((category) => CategoryMovieRow(category: category)),
-                  const SizedBox(height: 50), // Bottom padding
+                  ..._categories.map(
+                    (category) => CategoryMovieRow(category: category),
+                  ),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),
@@ -219,12 +241,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper for the Large Poster Card
   Widget _buildLargePoster(String imageUrl, String rate) {
     return Container(
-      // Margin creates spacing between items
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-      // Elevation shadow for depth
+
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.0),
         boxShadow: [
@@ -232,24 +252,28 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.black.withOpacity(0.5),
             blurRadius: 10,
             offset: const Offset(0, 10),
-          )
+          ),
         ],
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // The Image
           ClipRRect(
             borderRadius: BorderRadius.circular(20.0),
             child: imageUrl.isNotEmpty
                 ? Image.network(
-              imageUrl,
-              fit: BoxFit.fill,
-              height: double.infinity,
-              width: double.infinity,
-              errorBuilder: (context, error, stackTrace) =>
-                  Container(color: Colors.grey[900], child: const Icon(Icons.broken_image, color: Colors.white)),
-            )
+                    imageUrl,
+                    fit: BoxFit.fill,
+                    height: double.infinity,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[900],
+                      child: const Icon(
+                        Icons.broken_image,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
                 : Container(color: Colors.grey[900]),
           ),
 
@@ -257,7 +281,10 @@ class _HomeScreenState extends State<HomeScreen> {
             top: 20,
             left: 20,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 8.0,
+              ),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.7),
                 borderRadius: BorderRadius.circular(12.0),
@@ -268,9 +295,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     rate,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -323,21 +350,38 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
             children: [
               Text(
                 widget.category,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => MainLayout(initialIndex: 2, initialCategory: widget.category),
+                      builder: (_) => MainLayout(
+                        initialIndex: 2,
+                        initialCategory: widget.category,
+                      ),
                     ),
                   );
                 },
                 child: const Row(
                   children: [
-                    Text('See More', style: TextStyle(fontSize: 14, color: AppColors.secondaryColor)),
-                    Icon(Icons.arrow_right_alt, color: AppColors.secondaryColor, size: 18),
+                    Text(
+                      'See More',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.secondaryColor,
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_right_alt,
+                      color: AppColors.secondaryColor,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -346,15 +390,22 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
         ),
 
         SizedBox(
-          height: 200, // Fixed height for the container
+          height: 200,
           child: BlocBuilder<MoviesBloc, MoviesState>(
             bloc: _bloc,
             builder: (context, state) {
               if (state is MoviesLoading) {
-                return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.secondaryColor));
+                return const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.secondaryColor,
+                  ),
+                );
               }
               if (state is MoviesFailure) {
-                return const Center(child: Icon(Icons.error_outline, color: Colors.white24));
+                return const Center(
+                  child: Icon(Icons.error_outline, color: Colors.white24),
+                );
               }
               if (state is MoviesLoaded) {
                 if (state.movies.isEmpty) return const SizedBox();
@@ -366,9 +417,8 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
                   itemBuilder: (context, index) {
                     final movie = state.movies[index];
 
-                    // FIX: Wrapped in Container with explicit WIDTH
                     return Container(
-                      width: 130, // Forces the item to have width
+                      width: 130,
                       margin: const EdgeInsets.only(right: 14.0),
                       child: MovieGridItem(
                         movieId: movie.id,

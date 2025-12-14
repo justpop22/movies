@@ -1,10 +1,10 @@
 class MovieListParams {
   final int page;
   final int limit;
-  final String? queryTerm; // For search
-  final String? genre;     // e.g., 'Action'
-  final String? sortBy;    // e.g., 'rating'
-  final String? query;     // 'asc' or 'desc' (Note: standard API param is usually 'order_by')
+  final String? queryTerm;
+  final String? genre;
+  final String? sortBy;
+  final String? query;
 
   const MovieListParams({
     this.page = 1,
@@ -15,8 +15,6 @@ class MovieListParams {
     this.query,
   });
 
-  // ✅ CRITICAL: This method allows the BLoC to change the page
-  // without losing the genre or search term.
   MovieListParams copyWith({
     int? page,
     int? limit,

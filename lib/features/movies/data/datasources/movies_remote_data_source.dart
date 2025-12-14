@@ -1,5 +1,4 @@
 import 'package:movies/features/movies/data/models/movie_suggestion_model.dart';
-
 import '../../../../core/databases/api/api_consumer.dart';
 import '../../../../core/databases/api/end_points.dart';
 import '../../../../core/params/movie_detail_params.dart';
@@ -7,12 +6,15 @@ import '../../../../core/params/movie_suggestion_params.dart';
 import '../../../../core/params/movieparams.dart';
 import '../models/movie_detail.dart';
 import '../models/movie_model.dart';
+
 abstract class MovieRemoteDataSource {
   Future<MovieList> getMoviesList(MovieListParams params);
 
   Future<MovieDetailModel> getMovieDetails(MovieDetailParams params);
 
-  Future<MovieSuggestionModel> getMovieSuggestions(MovieSuggestionParams params);
+  Future<MovieSuggestionModel> getMovieSuggestions(
+    MovieSuggestionParams params,
+  );
 }
 
 class MovieRemoteDataSourceImpl extends MovieRemoteDataSource {
@@ -44,12 +46,13 @@ class MovieRemoteDataSourceImpl extends MovieRemoteDataSource {
     );
     return MovieDetailModel.fromJson(response[ApiKey.data][ApiKey.movie]);
   }
-  Future<MovieSuggestionModel> getMovieSuggestions(MovieSuggestionParams params) async {
+
+  Future<MovieSuggestionModel> getMovieSuggestions(
+    MovieSuggestionParams params,
+  ) async {
     final response = await api.get(
       EndPoints.movieSuggestions,
-      queryParameters: {
-        ApiKey.movieId: params.movieId,
-      },
+      queryParameters: {ApiKey.movieId: params.movieId},
     );
     return MovieSuggestionModel.fromJson(response[ApiKey.data]);
   }

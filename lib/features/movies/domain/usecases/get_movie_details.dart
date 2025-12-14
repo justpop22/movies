@@ -9,7 +9,9 @@ class GetMovieDetails {
 
   GetMovieDetails({required this.repository});
 
-  Future<Either<Failure, MovieDetailEntity>> call({required MovieDetailParams params}) {
+  Future<Either<Failure, MovieDetailEntity>> call({
+    required MovieDetailParams params,
+  }) {
     return repository.getMovieDetails(params: params);
   }
 }

@@ -8,7 +8,7 @@ class MovieList extends MovieEntity {
   final int? pageNumber;
 
   MovieList({
-    required super.movie, // Passes the list to the parent MovieEntity
+    required super.movie,
     required this.movieCount,
     required this.limit,
     required this.pageNumber,
@@ -20,8 +20,11 @@ class MovieList extends MovieEntity {
       limit: json[ApiKey.limit],
       pageNumber: json[ApiKey.pageNumber],
       movie: json[ApiKey.movies] != null
-          ? List<MovieModel>.from(json[ApiKey.movies].map((x) => MovieModel.fromJson(x)))
-          : []    );
+          ? List<MovieModel>.from(
+              json[ApiKey.movies].map((x) => MovieModel.fromJson(x)),
+            )
+          : [],
+    );
   }
 
   @override

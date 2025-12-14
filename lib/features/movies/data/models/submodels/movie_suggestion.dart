@@ -22,7 +22,7 @@ class MovieSuggestionSubModel extends MovieSuggestionSubEntity {
   final String? dateUploaded;
   final int? dateUploadedUnix;
 
-   MovieSuggestionSubModel({
+  MovieSuggestionSubModel({
     required super.id,
     required super.rating,
     required super.mediumCoverImage,
@@ -50,13 +50,11 @@ class MovieSuggestionSubModel extends MovieSuggestionSubEntity {
 
   factory MovieSuggestionSubModel.fromJson(Map<String, dynamic> json) {
     return MovieSuggestionSubModel(
-      // --- 1. Super Fields (Entity) ---
       id: json[ApiKey.id] ?? 0,
-      // Handle Number Safety (API might send 8 or 8.5)
+
       rating: (json[ApiKey.rating] as num?)?.toDouble() ?? 0.0,
       mediumCoverImage: json[ApiKey.mediumCoverImage] ?? '',
 
-      // --- 2. Model Specific Fields ---
       url: json[ApiKey.url] ?? '',
       imdbCode: json[ApiKey.imdbCode] ?? '',
       title: json[ApiKey.title] ?? '',
@@ -66,7 +64,6 @@ class MovieSuggestionSubModel extends MovieSuggestionSubEntity {
       year: json[ApiKey.year] ?? 0,
       runtime: json[ApiKey.runtime] ?? 0,
 
-      // Handle List Safety
       genres: json[ApiKey.genres] != null
           ? List<String>.from(json[ApiKey.genres])
           : [],

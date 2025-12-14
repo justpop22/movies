@@ -30,4 +30,3 @@ class MovieDetailEntity {
   @override
   List<Object?> get props => [id, title, rating];
 }
-

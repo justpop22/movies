@@ -21,4 +21,5 @@ class SearchMoviesEvent extends MoviesEvent {
   @override
   List<Object> get props => [queryTerm];
 }
+
 class ResetSearchEvent extends MoviesEvent {}

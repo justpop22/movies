@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../core/params/login_params.dart';
 import '../../../../core/provider/app_provider.dart';
 import '../../../../core/routes/app_route_name.dart';
@@ -15,7 +14,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../features/auth/presentation/cubit/auth_bloc.dart';
 import '../../../features/auth/presentation/cubit/auth_event.dart';
 import '../../../features/auth/presentation/cubit/auth_state.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -97,7 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const Spacer(),
 
-                          // --- Email Field ---
                           TextFormField(
                             controller: _emailController,
                             validator: (value) {
@@ -122,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 12),
 
-                          // --- Password Field ---
                           TextFormField(
                             controller: _passwordController,
                             validator: (value) {
@@ -190,7 +186,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 context.read<AuthBloc>().add(
                                   LoginEvent(
                                     params: LoginParams(
-                                      emailOrUsername: _emailController.text.trim(),
+                                      emailOrUsername: _emailController.text
+                                          .trim(),
                                       password: _passwordController.text,
                                     ),
                                   ),
@@ -259,7 +256,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             isLoading: state is AuthLoading,
                             isExpanded: true,
                             onTap: () {
-                              context.read<AuthBloc>().add(LoginWithGoogleEvent());
+                              context.read<AuthBloc>().add(
+                                LoginWithGoogleEvent(),
+                              );
                             },
                             text: locale.googleLogin,
                             icon: FontAwesomeIcons.google,

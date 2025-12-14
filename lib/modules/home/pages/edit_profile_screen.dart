@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../core/routes/app_route_name.dart';
 import '../../../../core/services/service_locater.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -18,7 +17,6 @@ import '../../../features/usre_arguments/presentaion/bloc/user_states.dart';
 import 'avatar_selection_sheet.dart';
 
 class EditProfileScreen extends StatefulWidget {
-
   final String initialAvatarPath;
 
   const EditProfileScreen({super.key, required this.initialAvatarPath});
@@ -36,10 +34,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   bool get isNetworkImage => currentAvatarPath.startsWith('http');
 
-  // Helper to map Avatar Path to ID (since Entity uses ID, UI uses Path)
   int _getAvatarIdFromPath(String path) {
-    // This requires access to the list.
-    // We can define the list here or import it from AvatarSelectionSheet
     const avatars = [
       'assets/logo/profile1.png',
       'assets/logo/profile2.png',
@@ -54,7 +49,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return avatars.indexOf(path);
   }
 
-  // Helper to map ID to Path
   String _getAvatarPathFromId(int? id) {
     const avatars = [
       'assets/logo/profile1.png',
@@ -70,7 +64,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (id != null && id >= 0 && id < avatars.length) {
       return avatars[id];
     }
-    return 'assets/logo/profile1.png'; // Default
+    return 'assets/logo/profile1.png';
   }
 
   @override
@@ -80,7 +74,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneController = TextEditingController();
     currentAvatarPath = widget.initialAvatarPath;
 
-    // 1. Fetch User Info when screen opens
     context.read<UserBloc>().add(GetUserInfoEvent());
   }
 
@@ -93,7 +86,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void _onSave() {
     if (currentUser != null) {
-      // 2. Prepare Updated Entity
       final updatedUser = UserEntity(
         uid: currentUser!.uid,
         email: currentUser!.email,
@@ -102,7 +94,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         avatarId: _getAvatarIdFromPath(currentAvatarPath),
       );
 
-      // 3. Trigger Update Event
       context.read<UserBloc>().add(UpdateUserEvent(updatedUser));
     }
   }
@@ -119,8 +110,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             setState(() {
               currentAvatarPath = newPath;
             });
-            // We update the local state immediately for preview.
-            // The actual save happens when "Update Data" is pressed.
           },
         );
       },
@@ -129,52 +118,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // MultiBlocListener to handle both User updates and Auth actions (Delete/Reset)
     return MultiBlocListener(
       listeners: [
-        // --- Listener 1: User Feature (Profile Updates) ---
         BlocListener<UserBloc, UserState>(
           listener: (context, state) {
             if (state is UserDataLoaded) {
-              // Populate fields when data is loaded
               currentUser = state.user;
               _nameController.text = state.user!.displayName;
               _phoneController.text = state.user?.phoneNumber ?? "";
 
-              // Update avatar based on ID
               if (state.user?.avatarId != null) {
                 currentAvatarPath = _getAvatarPathFromId(state.user?.avatarId);
               }
               setState(() {});
             } else if (state is UserInfoUpdated) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Profile Updated!"), backgroundColor: Colors.green),
+                const SnackBar(
+                  content: Text("Profile Updated!"),
+                  backgroundColor: Colors.green,
+                ),
               );
               Navigator.pop(context);
             } else if (state is UserError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
               );
             }
           },
         ),
 
-        // --- Listener 2: Auth Feature (Delete/Reset) ---
         BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Unauthenticated) {
-              // Account deleted
-              Navigator.pushNamedAndRemoveUntil(context, RouteName.login, (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                RouteName.login,
+                (route) => false,
+              );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Account deleted successfully")),
               );
             } else if (state is AuthActionSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.green,
+                ),
               );
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
               );
             }
           },
@@ -183,21 +182,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Scaffold(
         backgroundColor: AppColors.mainBackground,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: const Text("Edit Profile"),
-        ),
+        appBar: AppBar(title: const Text("Edit Profile")),
         body: SafeArea(
           child: Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 10),
 
-                      // --- Avatar Section ---
                       GestureDetector(
                         onTap: _showAvatarSheet,
                         child: Stack(
@@ -205,12 +204,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.secondaryColor, width: 2),
+                                border: Border.all(
+                                  color: AppColors.secondaryColor,
+                                  width: 2,
+                                ),
                               ),
                               child: CircleAvatar(
                                 radius: 60,
                                 backgroundImage: isNetworkImage
-                                    ? CachedNetworkImageProvider(currentAvatarPath) as ImageProvider
+                                    ? CachedNetworkImageProvider(
+                                            currentAvatarPath,
+                                          )
+                                          as ImageProvider
                                     : AssetImage(currentAvatarPath),
                               ),
                             ),
@@ -223,9 +228,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.secondaryColor,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.black, width: 2),
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 2,
+                                  ),
                                 ),
-                                child: const Icon(Icons.camera_alt, size: 20, color: Colors.black),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ],
@@ -234,7 +246,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       const SizedBox(height: 40),
 
-                      // --- Form Fields ---
                       CustomTextField(
                         controller: _nameController,
                         hint: "Full Name",
@@ -251,12 +262,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // --- Reset Password ---
                       Align(
                         alignment: Alignment.centerLeft,
                         child: TextButton(
                           onPressed: () {
-                            // Trigger Password Reset via AuthBloc
                             if (currentUser?.email != null) {
                               context.read<AuthBloc>().add(
                                 ForgotPasswordEvent(email: currentUser!.email),
@@ -285,13 +294,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
 
-              // --- Action Buttons ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Update Button
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -299,23 +306,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondaryColor,
                           foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           elevation: 2,
                         ),
                         onPressed: _onSave,
                         child: BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
                             if (state is UserLoading) {
-                              return const CircularProgressIndicator(color: Colors.black);
+                              return const CircularProgressIndicator(
+                                color: Colors.black,
+                              );
                             }
-                            return const Text("Update Data", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+                            return const Text(
+                              "Update Data",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
                           },
                         ),
                       ),
                     ),
                     const SizedBox(height: 15),
 
-                    // Delete Button
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -323,16 +339,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.dangerColor,
                           foregroundColor: AppColors.primaryText,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           elevation: 2,
                         ),
                         onPressed: () {
-                          // Show Confirmation Dialog
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
                               title: const Text("Delete Account"),
-                              content: const Text("Are you sure you want to delete your account? This action cannot be undone."),
+                              content: const Text(
+                                "Are you sure you want to delete your account? This action cannot be undone.",
+                              ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
@@ -340,17 +359,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context); // Close dialog
-                                    // Trigger Delete via AuthBloc
-                                    context.read<AuthBloc>().add(DeleteAccountEvent());
+                                    Navigator.pop(context);
+                                    context.read<AuthBloc>().add(
+                                      DeleteAccountEvent(),
+                                    );
                                   },
-                                  child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                  child: const Text(
+                                    "Delete",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
                                 ),
                               ],
                             ),
                           );
                         },
-                        child: const Text("Delete Account", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          "Delete Account",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],

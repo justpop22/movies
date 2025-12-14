@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-
 import '../theme/app_colors.dart';
-
 
 class StatBox extends StatelessWidget {
   final String label;
   final String count;
 
-  const StatBox({
-    super.key,
-    required this.label,
-    required this.count,
-  });
+  const StatBox({super.key, required this.label, required this.count});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +26,7 @@ class StatBox extends StatelessWidget {
           style: const TextStyle(
             color: AppColors.primaryText,
             fontSize: 24,
-            fontWeight: FontWeight.bold
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],

@@ -7,7 +7,10 @@ class ErrorModel {
   ErrorModel({required this.status, required this.errorMessage});
   factory ErrorModel.fromJson(Map jsonData) {
     return ErrorModel(
-      errorMessage: jsonData[ApiKey.statusMessage]?? "Unknown Error",
-      status: jsonData[ApiKey.status] is int ? jsonData[ApiKey.status] : int.tryParse(jsonData[ApiKey.status].toString()) ?? 0,    );
+      errorMessage: jsonData[ApiKey.statusMessage] ?? "Unknown Error",
+      status: jsonData[ApiKey.status] is int
+          ? jsonData[ApiKey.status]
+          : int.tryParse(jsonData[ApiKey.status].toString()) ?? 0,
+    );
   }
 }

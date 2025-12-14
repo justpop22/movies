@@ -1,4 +1,3 @@
-
 abstract class MovieDetailsEvent {
   const MovieDetailsEvent();
 
@@ -7,7 +6,7 @@ abstract class MovieDetailsEvent {
 }
 
 class GetMovieDetailsEvent extends MovieDetailsEvent {
-  final int id; // Or String, depending on your API
+  final int id;
   const GetMovieDetailsEvent({required this.id});
 
   @override

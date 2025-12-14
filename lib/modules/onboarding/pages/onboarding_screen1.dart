@@ -3,7 +3,7 @@ import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_btn.dart';
-import '../onboarding.dart'; // contains globalCurrentPage
+import '../onboarding.dart';
 
 class OnboardingScreen1 extends StatelessWidget {
   final PageController controller;
@@ -26,16 +26,15 @@ class OnboardingScreen1 extends StatelessWidget {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Colors.black.withOpacity(0.80), // dark bottom
+                  Colors.black.withOpacity(0.80),
                   Colors.black.withOpacity(0.55),
                   Colors.black.withOpacity(0.25),
-                  Colors.transparent,             // fade into image
+                  Colors.transparent,
                 ],
                 stops: const [0.0, 0.3, 0.6, 1.0],
               ),
             ),
           ),
-
 
           Container(
             decoration: BoxDecoration(
@@ -82,9 +81,6 @@ class OnboardingScreen1 extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // ————————————————
-                  // GLOBAL PAGE LISTENER
-                  // ————————————————
                   ValueListenableBuilder<int>(
                     valueListenable: globalCurrentPage,
                     builder: (context, current, _) {

@@ -1,8 +1,7 @@
-// 1. Import your Entities
 import '../../../domain/entities/movie_detail_entity.dart';
-import '../../../domain/entities/sub_entity/movie_suggestion_sub_entity.dart'; // Or your suggestion entity
+import '../../../domain/entities/sub_entity/movie_suggestion_sub_entity.dart';
 
-abstract class MovieDetailsState  {
+abstract class MovieDetailsState {
   const MovieDetailsState();
 
   @override

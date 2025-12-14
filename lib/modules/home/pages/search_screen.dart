@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-// Check this import spelling: 'service_locater.dart' or 'services_locator.dart'
 import '../../../core/services/service_locater.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/params/movieparams.dart';
@@ -46,12 +44,10 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
     super.dispose();
   }
 
-  /// Triggered when the user types
   void _onSearchChanged(String query) {
     if (query.trim().isNotEmpty) {
       context.read<MoviesBloc>().add(SearchMoviesEvent(queryTerm: query));
     } else {
-      // FIX 1: If user deletes text manually, reset the list
       context.read<MoviesBloc>().add(ResetSearchEvent());
     }
   }
@@ -61,15 +57,11 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
 
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
-
       final currentQuery = _searchController.text.trim();
 
-      // Only load more pages if we are actually searching
       if (currentQuery.isNotEmpty) {
         context.read<MoviesBloc>().add(
-          GetMoviesEvent(
-            params: MovieListParams(queryTerm: currentQuery),
-          ),
+          GetMoviesEvent(params: MovieListParams(queryTerm: currentQuery)),
         );
       }
     }
@@ -106,7 +98,9 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                 if (state is MoviesLoading) {
                   return const SliverFillRemaining(
                     child: Center(
-                      child: CircularProgressIndicator(color: AppColors.secondaryColor),
+                      child: CircularProgressIndicator(
+                        color: AppColors.secondaryColor,
+                      ),
                     ),
                   );
                 }
@@ -134,11 +128,13 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                     padding: const EdgeInsets.all(16.0),
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          // Bottom Loading Spinner logic
+                        (context, index) {
                           if (index >= state.movies.length) {
                             return const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.secondaryColor),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.secondaryColor,
+                              ),
                             );
                           }
 
@@ -153,12 +149,13 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                             ? state.movies.length
                             : state.movies.length + 1,
                       ),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.7,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.7,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
                     ),
                   );
                 }
@@ -188,9 +185,17 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
         decoration: InputDecoration(
           hintText: "Search by title...",
           hintStyle: TextStyle(color: AppColors.disabledText.withOpacity(0.7)),
-          prefixIcon: const Icon(Icons.search, color: AppColors.disabledText, size: 24),
+          prefixIcon: const Icon(
+            Icons.search,
+            color: AppColors.disabledText,
+            size: 24,
+          ),
           suffixIcon: IconButton(
-            icon: const Icon(Icons.clear, color: AppColors.disabledText, size: 20),
+            icon: const Icon(
+              Icons.clear,
+              color: AppColors.disabledText,
+              size: 20,
+            ),
             onPressed: () {
               _searchController.clear();
               context.read<MoviesBloc>().add(ResetSearchEvent());
@@ -198,7 +203,10 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
             },
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 10,
+          ),
         ),
       ),
     );
@@ -209,7 +217,11 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.movie_creation_outlined, size: 80, color: AppColors.disabledText),
+          const Icon(
+            Icons.movie_creation_outlined,
+            size: 80,
+            color: AppColors.disabledText,
+          ),
           const SizedBox(height: 16),
           Text(
             message,
