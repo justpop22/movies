@@ -174,7 +174,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
 
                           final movie = state.movies[index];
                           return MovieGridItem(
-                            // Use the correct field from your API Entity
+                            movieId: movie.id,
                             imagePath: movie.mediumCoverImage ?? "",
                             rating: movie.rating.toString(),
                           );

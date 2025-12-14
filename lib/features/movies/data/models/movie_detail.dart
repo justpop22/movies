@@ -15,13 +15,17 @@ class MovieDetailModel extends MovieDetailEntity {
     required super.genres,
     required super.cast,
     required super.screenshots,
+    required super.year,
+    required super.runtime,
   });
 
   factory MovieDetailModel.fromJson(Map<String, dynamic> json) {
     return MovieDetailModel(
       id: json['id'] ?? 0,
+      runtime: json['runtime'] ?? 0,
+      year: json['year'] ?? '',
       title: json['title'] ?? '',
-      posterUrl: json['large_cover_image'] ?? json['medium_cover_image'] ?? '',
+      posterUrl: json['large_cover_image'] ?? json['medium_cover_image'] ?? json['small_cover_image']??'',
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       likeCount: json['like_count'] ?? 0,
       descriptionFull: json['description_full'] ?? '',
@@ -31,6 +35,7 @@ class MovieDetailModel extends MovieDetailEntity {
       cast: json['cast'] != null
           ? List<MovieCast>.from((json['cast'] as List).map((x) => MovieCastModel.fromJson(x)))
           : [],
+
 
       // Parse Screenshots (YTS API sends them as 3 separate fields, or sometimes a list)
       // This logic checks for specific screenshot keys commonly found in YTS
@@ -55,6 +60,8 @@ class MovieDetailModel extends MovieDetailEntity {
       ApiKey.genres :genres,
       ApiKey.cast :cast,
       ApiKey.mediumCoverImage : posterUrl,
+      ApiKey.year :year,
+      ApiKey.runtime :runtime,
     };
   }
 }

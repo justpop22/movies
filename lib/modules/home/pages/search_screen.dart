@@ -144,6 +144,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
 
                           final movie = state.movies[index];
                           return MovieGridItem(
+                            movieId: movie.id,
                             imagePath: movie.mediumCoverImage ?? "",
                             rating: movie.rating.toString(),
                           );

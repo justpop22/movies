@@ -11,7 +11,7 @@ abstract class UserEvent extends Equatable {
 
 class AddFavoriteEvent extends UserEvent {
   final MovieSubEntity movie;
-  const AddFavoriteEvent(this.movie);
+  const AddFavoriteEvent({required this.movie});
 
   @override
   List<Object> get props => [movie];
@@ -19,7 +19,7 @@ class AddFavoriteEvent extends UserEvent {
 
 class RemoveFavoriteEvent extends UserEvent {
   final int movieId;
-  const RemoveFavoriteEvent(this.movieId);
+  const RemoveFavoriteEvent({required this.movieId});
 
   @override
   List<Object> get props => [movieId];
@@ -27,7 +27,7 @@ class RemoveFavoriteEvent extends UserEvent {
 
 class AddHistoryEvent extends UserEvent {
   final MovieSubEntity movie;
-  const AddHistoryEvent(this.movie);
+  const AddHistoryEvent({required this.movie});
 
   @override
   List<Object> get props => [movie];
@@ -35,7 +35,7 @@ class AddHistoryEvent extends UserEvent {
 
 class RemoveHistoryEvent extends UserEvent {
   final int movieId;
-  const RemoveHistoryEvent(this.movieId);
+  const RemoveHistoryEvent({required this.movieId});
 
   @override
   List<Object> get props => [movieId];

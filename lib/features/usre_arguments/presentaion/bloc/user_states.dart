@@ -1,19 +1,23 @@
 import 'package:equatable/equatable.dart';
 import '../../../auth/domain/enitiy/user_entity.dart';
+// Ensure this import points to where MovieSubEntity is defined
 import '../../../movies/domain/entities/sub_entity/movie.dart';
 
 abstract class UserState extends Equatable {
   const UserState();
+
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class UserInitial extends UserState {}
+
 class UserLoading extends UserState {}
 
 class UserActionSuccess extends UserState {
   final String message;
   const UserActionSuccess(this.message);
+
   @override
   List<Object> get props => [message];
 }
@@ -21,10 +25,42 @@ class UserActionSuccess extends UserState {
 class UserError extends UserState {
   final String message;
   const UserError(this.message);
+
   @override
   List<Object> get props => [message];
 }
 
+// ✅ UPDATED: This state now holds User + Favorites + History
+class UserDataLoaded extends UserState {
+  final UserEntity? user;
+  final List<MovieSubEntity> favorites;
+  final List<MovieSubEntity> watchHistory;
+
+  const UserDataLoaded({
+    this.user,
+    this.favorites = const [],
+    this.watchHistory = const [],
+  });
+
+  // Helper to update specific fields without losing others
+  UserDataLoaded copyWith({
+    UserEntity? user,
+    List<MovieSubEntity>? favorites,
+    List<MovieSubEntity>? watchHistory,
+  }) {
+    return UserDataLoaded(
+      user: user ?? this.user,
+      favorites: favorites ?? this.favorites,
+      watchHistory: watchHistory ?? this.watchHistory,
+    );
+  }
+
+  @override
+  List<Object?> get props => [user, favorites, watchHistory];
+}
+
+// You can keep these if other screens use them,
+// but ProfileScreen will primarily use UserDataLoaded.
 class UserInfoUpdated extends UserState {
   final UserEntity user;
   const UserInfoUpdated(this.user);
@@ -44,11 +80,4 @@ class HistoryLoaded extends UserState {
   const HistoryLoaded(this.movies);
   @override
   List<Object> get props => [movies];
-}
-
-class UserDataLoaded extends UserState {
-  final UserEntity user;
-  const UserDataLoaded(this.user);
-  @override
-  List<Object> get props => [user];
 }

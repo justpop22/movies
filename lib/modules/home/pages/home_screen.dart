@@ -11,6 +11,7 @@ import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_stat
 import '../../../core/widgets/movie_grid_item.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../home/pages/main_layout.dart';
+import 'mvoei_details.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -130,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
                       SizedBox(
-                        height: 350, // INCREASED HEIGHT for larger posters
+                        height: 350, // Keep your increased height
                         child: BlocBuilder<MoviesBloc, MoviesState>(
                           bloc: _trendingBloc,
                           builder: (context, state) {
@@ -162,9 +163,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: child,
                                       );
                                     },
-                                    child: _buildLargePoster(
-                                      movie.largeCoverImage ?? movie.mediumCoverImage ?? "",
-                                      movie.rating.toString(),
+                                    // ✅ FIX: Wrap the child in GestureDetector
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => MovieDetailsScreen(movieId: movie.id),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildLargePoster(
+                                        movie.largeCoverImage ?? movie.mediumCoverImage ?? "",
+                                        movie.rating.toString(),
+                                      ),
                                     ),
                                   );
                                 },
@@ -304,7 +316,6 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
       children: [
         const SizedBox(height: 30),
 
-        // --- Row Header (Category Name + See More) ---
         Padding(
           padding: const EdgeInsets.only(right: 20.0, bottom: 15),
           child: Row(
@@ -316,7 +327,6 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
               ),
               GestureDetector(
                 onTap: () {
-                  // Navigate to Browse Screen with this category selected
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -335,7 +345,6 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
           ),
         ),
 
-        // --- The Horizontal List ---
         SizedBox(
           height: 200, // Fixed height for the container
           child: BlocBuilder<MoviesBloc, MoviesState>(
@@ -362,6 +371,7 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
                       width: 130, // Forces the item to have width
                       margin: const EdgeInsets.only(right: 14.0),
                       child: MovieGridItem(
+                        movieId: movie.id,
                         rating: movie.rating.toString(),
                         imagePath: movie.mediumCoverImage ?? "",
                       ),

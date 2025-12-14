@@ -138,12 +138,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             if (state is UserDataLoaded) {
               // Populate fields when data is loaded
               currentUser = state.user;
-              _nameController.text = state.user.displayName;
-              _phoneController.text = state.user.phoneNumber ?? "";
+              _nameController.text = state.user!.displayName;
+              _phoneController.text = state.user?.phoneNumber ?? "";
 
               // Update avatar based on ID
-              if (state.user.avatarId != null) {
-                currentAvatarPath = _getAvatarPathFromId(state.user.avatarId);
+              if (state.user?.avatarId != null) {
+                currentAvatarPath = _getAvatarPathFromId(state.user?.avatarId);
               }
               setState(() {});
             } else if (state is UserInfoUpdated) {

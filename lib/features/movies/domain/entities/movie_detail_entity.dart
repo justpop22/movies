@@ -10,6 +10,8 @@ class MovieDetailEntity {
   final List<String> genres;
   final List<MovieCast> cast;
   final List<String> screenshots;
+  final int year;
+  final int runtime;
 
   const MovieDetailEntity({
     required this.id,
@@ -21,6 +23,8 @@ class MovieDetailEntity {
     required this.genres,
     required this.cast,
     required this.screenshots,
+    required this.year,
+    required this.runtime,
   });
 
   @override

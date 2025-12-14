@@ -5,4 +5,5 @@ class RouteName {
   static const String register = "register";
   static const String forgetPassword = "forget-password";
   static const String layout = "layout";
+  static const String movieDetail = "movie-detail";
 }

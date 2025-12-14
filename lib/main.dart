@@ -4,15 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movies/core/provider/app_provider.dart';
 import 'package:movies/core/theme/app_theme.dart';
 import 'package:movies/firebase_options.dart';
-import 'package:movies/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'config/shared_pref/cache_manager.dart';
 import 'core/routes/route_gen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'core/services/service_locater.dart' as di;
 import 'features/auth/presentation/cubit/auth_bloc.dart';
 import 'features/usre_arguments/presentaion/bloc/user_bloc.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +43,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       localizationsDelegates: const [
+
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

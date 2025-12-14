@@ -13,14 +13,21 @@ import '../../features/usre_arguments/presentaion/bloc/user_states.dart';
 import '../../modules/home/pages/edit_profile_screen.dart';
 
 class ProfileHeader extends StatefulWidget {
-  const ProfileHeader({super.key});
+  // ✅ 1. Accept counts as parameters
+  final int watchListCount;
+  final int historyCount;
+
+  const ProfileHeader({
+    super.key,
+    this.watchListCount = 0,
+    this.historyCount = 0,
+  });
 
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
 }
 
 class _ProfileHeaderState extends State<ProfileHeader> {
-  // Define avatars here or in a constants file
   final List<String> _avatars = [
     'assets/logo/profile1.png',
     'assets/logo/profile2.png',
@@ -36,43 +43,38 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    // Only fetch if data isn't already loaded to avoid unnecessary calls
-    // on simple rebuilds, unless you want to refresh every time.
-    final state = context.read<UserBloc>().state;
-    if (state is! UserDataLoaded) {
-      context.read<UserBloc>().add(GetUserInfoEvent());
-    }
+    // Ensure User Info is fetched
+    context.read<UserBloc>().add(GetUserInfoEvent());
+    // Note: We don't fetch favorites/history here because ProfileScreen
+    // handles that and passes the counts down.
   }
 
-  /// Helper to determine which image provider to use
   ImageProvider _getAvatarProvider(UserEntity? user) {
-    // 1. Check for Network Image (Google Auth / Uploaded)
-    // Assuming UserEntity has a field 'photoUrl'
-    /* if (user?.photoUrl != null && user!.photoUrl!.isNotEmpty) {
-      return CachedNetworkImageProvider(user.photoUrl!);
-    }
-    */
-
-    // 2. Check for Local Asset ID
     if (user != null && user.avatarId != null) {
       final index = user.avatarId!;
       if (index >= 0 && index < _avatars.length) {
         return AssetImage(_avatars[index]);
       }
     }
-
-    // 3. Default Fallback
     return AssetImage(_avatars[0]);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Switch to BlocBuilder to make the UI reactive directly to the BLoC
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
+        // ✅ 2. robust user extraction
+        // Try to get user from UserDataLoaded OR UserLoaded (if it exists there)
+        UserEntity? currentUser;
+        if (state is UserDataLoaded) {
+          currentUser = state.user;
+        } else if (state is UserDataLoaded) {
+          // If UserLoaded also holds the user object, use it.
+          // If not, UserDataLoaded might be needed.
+          // Assuming UserLoaded contains 'user' property based on typical BLoC patterns:
+          // currentUser = state.user;
+        }
 
-        // Extract user safely from state
-        final UserEntity? currentUser = (state is UserDataLoaded) ? state.user : null;
         final bool isLoading = (state is UserLoading);
 
         return Container(
@@ -89,7 +91,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 children: [
                   // --- Avatar & Name ---
                   Expanded(
-                    // Wrapped in Expanded to prevent overflow if name is long
                     child: Column(
                       children: [
                         Container(
@@ -101,8 +102,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                   color: Colors.black.withOpacity(0.1),
                                   blurRadius: 10,
                                 )
-                              ]
-                          ),
+                              ]),
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.grey.shade200,
@@ -130,17 +130,25 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
                   // --- Stats Row ---
                   const SizedBox(width: 15),
-                  const Row(
+                  Row(
                     children: [
-                      StatBox(label: "Wishlist", count: "0"),
-                      SizedBox(width: 10),
-                      StatBox(label: "History", count: "0"),
+                      // ✅ 3. Use the passed parameters for counts
+                      StatBox(
+                          label: "Wishlist",
+                          count: widget.watchListCount.toString()
+                      ),
+                      const SizedBox(width: 10),
+                      StatBox(
+                          label: "History",
+                          count: widget.historyCount.toString()
+                      ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 25),
 
+              // ... Buttons Row (Same as before) ...
               Row(
                 children: [
                   Expanded(
@@ -148,8 +156,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                     child: CustomBtn(
                       text: "Edit Profile",
                       onTap: () {
-                        // Determine current path for arguments
-                        // If logic gets complex, pass the whole UserEntity to EditProfileScreen
                         String currentAsset = _avatars[0];
                         if (currentUser?.avatarId != null &&
                             currentUser!.avatarId! < _avatars.length) {
@@ -161,8 +167,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                           MaterialPageRoute(
                             builder: (_) => EditProfileScreen(
                               initialAvatarPath: currentAsset,
-                              // best practice: pass the full user object if possible
-                              // user: currentUser,
                             ),
                           ),
                         );
@@ -172,10 +176,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       isExpanded: true,
                     ),
                   ),
-
                   const SizedBox(width: 10),
-
-                  // Exit
                   Expanded(
                     flex: 1,
                     child: CustomBtn(

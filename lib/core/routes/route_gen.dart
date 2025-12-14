@@ -3,6 +3,7 @@ import 'package:movies/modules/home/pages/main_layout.dart';
 import '../../modules/auth/pages/forget_password_screen.dart';
 import '../../modules/auth/pages/login_screen.dart';
 import '../../modules/auth/pages/register_screen.dart';
+import '../../modules/home/pages/mvoei_details.dart';
 import '../../modules/onboarding/onboarding.dart';
 import '../../modules/splash/pages/splash_screen.dart';
 import 'app_route_name.dart';
@@ -52,6 +53,12 @@ class RouteGen {
           pageBuilder: (context, animation, secondaryAnimation) {
             return MainLayout();
           },);
+        case RouteName.movieDetail:
+          return PageRouteBuilder(
+            transitionDuration: Duration(seconds: 1),
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return MovieDetailsScreen(movieId: settings.arguments as int,);
+            },);
 
       default:
         return PageRouteBuilder(
