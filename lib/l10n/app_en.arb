@@ -47,5 +47,7 @@
   "summary": "Summary",
   "noDesAvail": "No description available.",
   "cast": "Cast",
-  "genres": "Genres"
+  "genres": "Genres",
+  "screenshots": "Screenshots",
+  "unknown": "Unknown"
 }

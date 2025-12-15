@@ -156,4 +156,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get genres => 'التصنيفات';
+
+  @override
+  String get screenshots => 'لقطات الشاشة';
+
+  @override
+  String get unknown => 'غير معروف';
 }

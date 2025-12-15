@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/theme/app_colors.dart';
 
+import '../../../../l10n/app_localizations.dart';
 class MovieCast extends StatelessWidget {
   final List<dynamic> castList;
 
@@ -8,15 +9,16 @@ class MovieCast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     if (castList.isEmpty) return const SizedBox();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: castList.map((actor) {
-          final String name = actor.name ?? "Unknown";
+          final String name = actor.name ?? locale.unknown;
           final String imageUrl = actor.urlSmallImage ?? "";
-          final String characterName = actor.characterName ?? "Unknown";
+          final String characterName = actor.characterName ?? locale.unknown;
 
           return Container(
             margin: const EdgeInsets.only(bottom: 12),

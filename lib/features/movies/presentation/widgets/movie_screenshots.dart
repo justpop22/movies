@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:movies/core/theme/app_colors.dart';
-
+import 'package:movies/l10n/app_localizations.dart';
 class MovieScreenshots extends StatelessWidget {
   final List<String> screenshotUrls;
 
@@ -9,6 +9,7 @@ class MovieScreenshots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     if (screenshotUrls.isEmpty) return const SizedBox();
 
     return Column(
@@ -17,10 +18,10 @@ class MovieScreenshots extends StatelessWidget {
         FadeInUp(
           from: 20,
           duration: const Duration(milliseconds: 500),
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.fromLTRB(20, 20, 20, 15),
             child: Text(
-              "Screenshots",
+              locale.screenshots,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 19,

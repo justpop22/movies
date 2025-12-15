@@ -391,6 +391,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Genres'**
   String get genres;
+
+  /// No description provided for @screenshots.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get screenshots;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
 }
 
 class _AppLocalizationsDelegate
