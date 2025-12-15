@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+
+import '../../../l10n/app_localizations.dart';
+import '../../provider/app_provider.dart';
 
 class ProfileTabs extends StatelessWidget {
   final int selectedIndex;
@@ -13,6 +17,8 @@ class ProfileTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
+    var appProvider = Provider.of<AppProvider>(context);
     return Stack(
       children: [
         Positioned.fill(
@@ -22,11 +28,11 @@ class ProfileTabs extends StatelessWidget {
               children: [
                 _buildTabItem(
                   0,
-                  "Watch List",
+                  locale.wishlist,
                   "assets/icons/watch_list.png",
                   isIcon: false,
                 ),
-                _buildTabItem(1, "History", Icons.history, isIcon: true),
+                _buildTabItem(1, locale.history, Icons.history, isIcon: true),
               ],
             ),
           ),
@@ -41,7 +47,9 @@ class ProfileTabs extends StatelessWidget {
               AnimatedAlign(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
-                alignment: selectedIndex == 0
+                alignment: appProvider.local == "en" ? selectedIndex == 0
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight : selectedIndex == 1
                     ? Alignment.centerLeft
                     : Alignment.centerRight,
                 child: FractionallySizedBox(

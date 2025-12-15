@@ -1,15 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/services/service_locater.dart';
-import '../../../core/params/movieparams.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
-import '../../../core/widgets/movie_grid_item.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../home/pages/main_layout.dart';
-import 'movie_details.dart';
+import '../../../../core/params/movieparams.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/movie_grid_item.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../main_layout.dart';
+import '../movieDetails/movie_details.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -137,8 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      SizedBox(
-                        height: 350,
+                      Expanded(
                         child: BlocBuilder<MoviesBloc, MoviesState>(
                           bloc: _trendingBloc,
                           builder: (context, state) {
@@ -338,6 +338,7 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -368,10 +369,10 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
                     ),
                   );
                 },
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
-                      'See More',
+                      locale.seeMore,
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.secondaryColor,

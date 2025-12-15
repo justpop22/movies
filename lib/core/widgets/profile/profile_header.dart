@@ -1,15 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/custom_btn.dart';
-import '../../../core/widgets/exit_dialog.dart';
-import '../../../core/widgets/stat_box.dart';
-import '../../../features/auth/domain/enitiy/user_entity.dart';
-import '../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
-import '../../features/usre_arguments/presentaion/bloc/user_events.dart';
-import '../../features/usre_arguments/presentaion/bloc/user_states.dart';
-import '../../modules/home/pages/edit_profile_screen.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/custom_btn.dart';
+import '../dialogs/exit_dialog.dart';
+import '../../../../core/widgets/stat_box.dart';
+import '../../../../features/auth/domain/enitiy/user_entity.dart';
+import '../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
+import '../../../features/usre_arguments/presentaion/bloc/user_events.dart';
+import '../../../features/usre_arguments/presentaion/bloc/user_states.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../modules/layout/pages/profile/editProfile/edit_profile_screen.dart';
 
 class ProfileHeader extends StatefulWidget {
   final int watchListCount;
@@ -57,6 +57,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
         UserEntity? currentUser;
@@ -78,6 +79,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
+                    flex: 2,
                     child: Column(
                       children: [
                         Container(
@@ -102,7 +104,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          currentUser?.displayName ?? "Guest User",
+                          currentUser?.displayName ?? locale.guestUser,
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -115,23 +117,28 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       ],
                     ),
                   ),
-
-                  const SizedBox(width: 15),
-                  Row(
-                    children: [
-                      StatBox(
-                        label: "Wishlist",
-                        count: widget.watchListCount.toString(),
-                      ),
-                      const SizedBox(width: 10),
-                      StatBox(
-                        label: "History",
-                        count: widget.historyCount.toString(),
-                      ),
-                    ],
+                  Expanded(
+                    flex: 3,
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      spacing: 12,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        StatBox(
+                          label: locale.wishlist,
+                          count: widget.watchListCount.toString(),
+                        ),
+                        StatBox(
+                          label: locale.history,
+                          count: widget.historyCount.toString(),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
+
               const SizedBox(height: 25),
 
               Row(
@@ -139,7 +146,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   Expanded(
                     flex: 2,
                     child: CustomBtn(
-                      text: "Edit Profile",
+                      text: locale.editProfile,
                       onTap: () {
                         String currentAsset = _avatars[0];
                         if (currentUser?.avatarId != null &&
@@ -165,7 +172,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   Expanded(
                     flex: 1,
                     child: CustomBtn(
-                      text: "Exit",
+                      text: locale.exit,
                       icon: Icons.logout,
                       iconSpacing: 5,
                       onTap: () => showExitConfirmation(context),

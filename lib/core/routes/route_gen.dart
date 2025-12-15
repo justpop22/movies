@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:movies/modules/home/pages/main_layout.dart';
 import '../../modules/auth/pages/forget_password_screen.dart';
 import '../../modules/auth/pages/login_screen.dart';
 import '../../modules/auth/pages/register_screen.dart';
-import '../../modules/home/pages/movie_details.dart';
+import '../../modules/layout/pages/main_layout.dart';
+import '../../modules/layout/pages/movieDetails/movie_details.dart';
 import '../../modules/onboarding/onboarding.dart';
 import '../../modules/splash/pages/splash_screen.dart';
 import 'app_route_name.dart';

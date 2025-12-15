@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class AvatarSelectionSheet extends StatelessWidget {
   final String currentAvatarPath;
@@ -25,6 +26,7 @@ class AvatarSelectionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
       padding: const EdgeInsets.all(20.0),
@@ -44,8 +46,8 @@ class AvatarSelectionSheet extends StatelessWidget {
           ),
           const SizedBox(height: 15),
 
-          const Text(
-            "Pick Avatar",
+          Text(
+          locale.pickAvatar,
             style: TextStyle(
               color: AppColors.secondaryColor,
               fontSize: 18,

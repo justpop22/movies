@@ -5,6 +5,7 @@ import 'package:movies/core/provider/app_provider.dart';
 import 'package:movies/core/theme/app_theme.dart';
 import 'package:movies/firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'config/shared_pref/cache_manager.dart';
 import 'core/routes/route_gen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,8 +17,8 @@ import 'l10n/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await di.init();
-
+  final sharedPreferences = await SharedPreferences.getInstance();
+  await di.init(sharedPreferences);
   await CacheManager.init();
   runApp(
     MultiBlocProvider(
@@ -43,16 +44,12 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       localizationsDelegates: const [
-
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('ar'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('ar')],
       locale: Locale(provider.local),
       debugShowCheckedModeBanner: false,
       darkTheme: AppTheme.darkTheme,

@@ -49,24 +49,26 @@ import '../databases/cache/cache_helper.dart';
 
 final sl = GetIt.instance;
 
-Future<void> init() async {
+Future<void> init(SharedPreferences sharedPreferences) async {
+
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => GoogleSignIn());
 
-  final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+
 
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
   sl.registerLazySingleton<ApiConsumer>(() => DioConsumer(dio: sl()));
   sl.registerLazySingleton<AuthConsumer>(
-    () => FirebaseAuthConsumer(firebaseAuth: sl()),
+        () => FirebaseAuthConsumer(firebaseAuth: sl()),
   );
   sl.registerLazySingleton<CacheHelper>(() => CacheHelper());
+
   sl.registerFactory(
-    () => AuthBloc(
+        () => AuthBloc(
       loginUseCase: sl(),
       signUpUseCase: sl(),
       logoutUseCase: sl(),
@@ -77,7 +79,7 @@ Future<void> init() async {
     ),
   );
   sl.registerFactory(
-    () => UserBloc(
+        () => UserBloc(
       addFavorite: sl(),
       removeFavorite: sl(),
       addHistory: sl(),
@@ -87,6 +89,10 @@ Future<void> init() async {
       getHistory: sl(),
       getUserInfo: sl(),
     ),
+  );
+  sl.registerFactory(() => MoviesBloc(getMoviesList: sl()));
+  sl.registerFactory(
+        () => MovieDetailsBloc(getMovieDetails: sl(), getMovieSuggestions: sl()),
   );
 
   sl.registerLazySingleton(() => LoginUseCase(repository: sl()));
@@ -106,16 +112,28 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetWatchHistoryUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetUserInfoUseCase(repository: sl()));
 
+  sl.registerLazySingleton(() => GetMoviesList(repository: sl()));
+  sl.registerLazySingleton(() => GetMovieDetails(repository: sl()));
+  sl.registerLazySingleton(() => GetMovieSuggestions(repository: sl()));
+
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+        () => AuthRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
   sl.registerLazySingleton<UserRepository>(
-    () => UserRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+        () => UserRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+  );
+
+  sl.registerLazySingleton<MovieRepository>(
+        () => MovieRepositoryImpl(
+      networkInfo: sl(),
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+    ),
   );
 
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(
+        () => AuthRemoteDataSourceImpl(
       authConsumer: sl(),
       firestore: sl(),
       googleSignIn: sl(),
@@ -123,31 +141,14 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<UserRemoteDataSource>(
-    () => UserRemoteDataSourceImpl(firestore: sl(), firebaseAuth: sl()),
-  );
-
-  sl.registerFactory(() => MoviesBloc(getMoviesList: sl()));
-  sl.registerFactory(
-    () => MovieDetailsBloc(getMovieDetails: sl(), getMovieSuggestions: sl()),
-  );
-
-  sl.registerLazySingleton(() => GetMoviesList(repository: sl()));
-  sl.registerLazySingleton(() => GetMovieDetails(repository: sl()));
-  sl.registerLazySingleton(() => GetMovieSuggestions(repository: sl()));
-
-  sl.registerLazySingleton<MovieRepository>(
-    () => MovieRepositoryImpl(
-      networkInfo: sl(),
-      remoteDataSource: sl(),
-      localDataSource: sl(),
-    ),
+        () => UserRemoteDataSourceImpl(firestore: sl(), firebaseAuth: sl()),
   );
 
   sl.registerLazySingleton<MovieRemoteDataSource>(
-    () => MovieRemoteDataSourceImpl(api: sl()),
+        () => MovieRemoteDataSourceImpl(api: sl()),
   );
 
   sl.registerLazySingleton<MovieLocalDataSource>(
-    () => MovieLocalDataSource(cache: sl()),
+        () => MovieLocalDataSource(cache: sl()),
   );
 }

@@ -1,19 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/routes/app_route_name.dart';
-import '../../../../core/services/service_locater.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/delete_dialog.dart';
-import '../../../../core/widgets/edit_acc_text_field.dart';
-import '../../../features/auth/domain/enitiy/user_entity.dart';
-import '../../../features/auth/presentation/cubit/auth_bloc.dart';
-import '../../../features/auth/presentation/cubit/auth_event.dart';
-import '../../../features/auth/presentation/cubit/auth_state.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_events.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_states.dart';
+import 'package:movies/core/widgets/dialogs/delete_dialog.dart';
+import '../../../../../../core/routes/app_route_name.dart';
+import '../../../../../../core/theme/app_colors.dart';
+import '../../../../../core/widgets/profile/edit_acc_text_field.dart';
+import '../../../../../features/auth/domain/enitiy/user_entity.dart';
+import '../../../../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../../../../features/auth/presentation/cubit/auth_event.dart';
+import '../../../../../features/auth/presentation/cubit/auth_state.dart';
+import '../../../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
+import '../../../../../features/usre_arguments/presentaion/bloc/user_events.dart';
+import '../../../../../features/usre_arguments/presentaion/bloc/user_states.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import 'avatar_selection_sheet.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -118,6 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return MultiBlocListener(
       listeners: [
         BlocListener<UserBloc, UserState>(
@@ -182,7 +183,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Scaffold(
         backgroundColor: AppColors.mainBackground,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(title: const Text("Edit Profile")),
+        appBar: AppBar(title: Text(locale.editProfile)),
         body: SafeArea(
           child: Column(
             children: [
@@ -248,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       CustomTextField(
                         controller: _nameController,
-                        hint: "Full Name",
+                        hint: locale.fullName,
                         icon: Icons.person,
                         inputType: TextInputType.name,
                       ),
@@ -256,7 +257,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       CustomTextField(
                         controller: _phoneController,
-                        hint: "Phone Number",
+                        hint: locale.phoneNumber,
                         icon: Icons.phone,
                         inputType: TextInputType.phone,
                       ),
@@ -276,8 +277,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             padding: EdgeInsets.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          child: const Text(
-                            "Reset Password",
+                          child: Text(
+                            locale.resetPassword,
                             style: TextStyle(
                               color: AppColors.secondaryText,
                               fontSize: 16,
@@ -319,8 +320,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 color: Colors.black,
                               );
                             }
-                            return const Text(
-                              "Update Data",
+
+                            return Text(
+                              locale.updateData,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -345,36 +347,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           elevation: 2,
                         ),
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text("Delete Account"),
-                              content: const Text(
-                                "Are you sure you want to delete your account? This action cannot be undone.",
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text("Cancel"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    context.read<AuthBloc>().add(
-                                      DeleteAccountEvent(),
-                                    );
-                                  },
-                                  child: const Text(
-                                    "Delete",
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                          showDeleteConfirmation(context);
                         },
-                        child: const Text(
-                          "Delete Account",
+                        child: Text(
+                          locale.deleteAccount,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/theme/app_colors.dart';
-import '../../modules/home/pages/movie_details.dart';
+import '../../modules/layout/pages/movieDetails/movie_details.dart';
 
 class MovieGridItem extends StatelessWidget {
   final int movieId;
@@ -25,60 +25,78 @@ class MovieGridItem extends StatelessWidget {
           ),
         );
       },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          image: DecorationImage(
-            image: NetworkImage(imagePath),
-            fit: BoxFit.cover,
-            onError: (exception, stackTrace) {},
-          ),
-        ),
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
-                ),
-              ),
-            ),
 
-            Positioned(
-              top: 8,
-              left: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.star,
-                      color: AppColors.secondaryColor,
-                      size: 12,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      rating,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double cardWidth = constraints.maxWidth;
+
+          double iconSize = (cardWidth * 0.12).clamp(10.0, 20.0);
+          double fontSize = (cardWidth * 0.10).clamp(10.0, 18.0);
+          double paddingH = cardWidth * 0.05;
+          double paddingV = cardWidth * 0.02;
+          double positionedOffset = cardWidth * 0.06;
+
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                image: NetworkImage(imagePath),
+                fit: BoxFit.cover,
+                onError: (exception, stackTrace) {},
               ),
             ),
-          ],
-        ),
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: positionedOffset,
+                  left: positionedOffset,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: paddingH,
+                      vertical: paddingV,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: AppColors.secondaryColor,
+                          size: iconSize,
+                        ),
+                        SizedBox(width: cardWidth * 0.03),
+                        Text(
+                          rating,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

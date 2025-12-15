@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import 'home_screen.dart';
-import 'search_screen.dart';
-import 'browse_screen.dart';
-import 'profile_screen.dart';
+import '../../../l10n/app_localizations.dart';
+import 'home/home_screen.dart';
+import 'search/search_screen.dart';
+import 'browse/browse_screen.dart';
+import 'profile/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
   final int initialIndex;
@@ -32,6 +33,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
       body: screens[currentIndex],
@@ -52,22 +54,22 @@ class _MainLayoutState extends State<MainLayout> {
                 selectedFontSize: 12,
                 unselectedFontSize: 12,
                 iconSize: 22,
-                items: const [
+                items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    label: "Home",
+                    label: locale.home,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    label: "Search",
+                    label: locale.search,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.explore),
-                    label: "Browse",
+                    label: locale.browse,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
-                    label: "Profile",
+                    label: locale.profile,
                   ),
                 ],
               ),

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/services/service_locater.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/params/movieparams.dart';
-import '../../../core/widgets/movie_grid_item.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/params/movieparams.dart';
+import '../../../../core/widgets/movie_grid_item.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BrowseScreen extends StatelessWidget {
   final String? initialCategory;
+
 
   const BrowseScreen({super.key, this.initialCategory});
 
@@ -91,6 +93,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
       body: SafeArea(
@@ -132,11 +135,11 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
 
                 if (state is MoviesLoaded) {
                   if (state.movies.isEmpty) {
-                    return const SliverFillRemaining(
+                    return SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(
                         child: Text(
-                          "No movies found for this category",
+                          locale.noMoviesCategory,
                           style: TextStyle(color: AppColors.disabledText),
                         ),
                       ),

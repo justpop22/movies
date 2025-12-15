@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/services/service_locater.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/params/movieparams.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
-import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
-import '../../../core/widgets/movie_grid_item.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/params/movieparams.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../../features/movies/presentation/cubit/movie_list_cubit/movies_state.dart';
+import '../../../../core/widgets/movie_grid_item.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -69,6 +70,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
       body: SafeArea(
@@ -91,7 +93,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                 if (state is MoviesInitial) {
                   return SliverFillRemaining(
                     hasScrollBody: false,
-                    child: _buildEmptyState("Start searching for movies"),
+                    child: _buildEmptyState(locale.startSearching),
                   );
                 }
 
@@ -120,7 +122,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                   if (state.movies.isEmpty) {
                     return SliverFillRemaining(
                       hasScrollBody: false,
-                      child: _buildEmptyState("No movies found"),
+                      child: _buildEmptyState(locale.noMoviesFound),
                     );
                   }
 
@@ -128,7 +130,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                     padding: const EdgeInsets.all(16.0),
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+                            (context, index) {
                           if (index >= state.movies.length) {
                             return const Center(
                               child: CircularProgressIndicator(
@@ -150,12 +152,12 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                             : state.movies.length + 1,
                       ),
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.7,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                          ),
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.7,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
                     ),
                   );
                 }
@@ -170,6 +172,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
   }
 
   Widget _buildSearchField() {
+    var locale = AppLocalizations.of(context)!;
     return Container(
       height: 50,
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -180,10 +183,10 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
       child: TextField(
         controller: _searchController,
         onChanged: _onSearchChanged,
-        style: const TextStyle(color: Colors.white, fontSize: 16),
+        style: TextStyle(color: Colors.white, fontSize: 16),
         cursorColor: AppColors.secondaryColor,
         decoration: InputDecoration(
-          hintText: "Search by title...",
+          hintText: locale.searchByTitle,
           hintStyle: TextStyle(color: AppColors.disabledText.withOpacity(0.7)),
           prefixIcon: const Icon(
             Icons.search,
@@ -217,11 +220,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.movie_creation_outlined,
-            size: 80,
-            color: AppColors.disabledText,
-          ),
+          Image.asset("assets/icons/popcorn_icon.png", height: 124, width: 124),
           const SizedBox(height: 16),
           Text(
             message,

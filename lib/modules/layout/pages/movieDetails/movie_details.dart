@@ -3,17 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movies/core/theme/app_colors.dart';
 import 'package:movies/core/widgets/movie_grid_item.dart';
-import '../../../core/services/service_locater.dart';
-import '../../../features/movies/presentation/cubit/movie_detail_cubit/movie_details_bloc.dart';
-import '../../../features/movies/presentation/cubit/movie_detail_cubit/movie_details_event.dart';
-import '../../../features/movies/presentation/cubit/movie_detail_cubit/movie_details_state.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_events.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_states.dart';
-import '../../../features/movies/presentation/widgets/movie_app_bar.dart';
-import '../../../features/movies/presentation/widgets/movie_stats.dart';
-import '../../../features/movies/presentation/widgets/movie_screenshots.dart';
-import '../../../features/movies/presentation/widgets/movie_cast.dart';
+import '../../../../core/services/service_locater.dart';
+import '../../../../features/movies/presentation/cubit/movie_detail_cubit/movie_details_bloc.dart';
+import '../../../../features/movies/presentation/cubit/movie_detail_cubit/movie_details_event.dart';
+import '../../../../features/movies/presentation/cubit/movie_detail_cubit/movie_details_state.dart';
+import '../../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
+import '../../../../features/usre_arguments/presentaion/bloc/user_events.dart';
+import '../../../../features/usre_arguments/presentaion/bloc/user_states.dart';
+import '../../../../features/movies/presentation/widgets/movie_app_bar.dart';
+import '../../../../features/movies/presentation/widgets/movie_stats.dart';
+import '../../../../features/movies/presentation/widgets/movie_screenshots.dart';
+import '../../../../features/movies/presentation/widgets/movie_cast.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
   final int movieId;
@@ -47,6 +48,7 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
 
   @override
   Widget build(BuildContext context) {
+    var locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
       body: BlocBuilder<MovieDetailsBloc, MovieDetailsState>(
@@ -110,8 +112,8 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
-                                child: const Text(
-                                  'Watch',
+                                child: Text(
+                                  locale.watch,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
@@ -131,17 +133,17 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                           MovieScreenshots(screenshotUrls: movie.screenshots),
 
                           if (suggestions.isNotEmpty) ...[
-                            _buildSectionTitle('Similar'),
+                            _buildSectionTitle(locale.similar),
                             _buildSimilarMoviesList(suggestions),
                           ],
 
-                          _buildSectionTitle('Summary'),
+                          _buildSectionTitle(locale.summary),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
                               movie.descriptionFull.isNotEmpty
                                   ? movie.descriptionFull
-                                  : "No description available.",
+                                  : locale.noDesAvail,
                               style: const TextStyle(
                                 color: AppColors.secondaryText,
                                 fontSize: 15,
@@ -151,11 +153,11 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                           ),
 
                           if (movie.cast.isNotEmpty) ...[
-                            _buildSectionTitle('Cast'),
+                            _buildSectionTitle(locale.cast),
                             MovieCast(castList: movie.cast),
                           ],
 
-                          _buildSectionTitle('Genres'),
+                          _buildSectionTitle(locale.genres),
                           _buildGenresRow(movie.genres),
 
                           const SizedBox(height: 40),

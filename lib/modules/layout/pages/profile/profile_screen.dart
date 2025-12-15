@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/routes/app_route_name.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/movie_grid_item.dart';
-import '../../../core/widgets/profile_header.dart';
-import '../../../core/widgets/profile_tabs.dart';
-import '../../../core/widgets/profile_tabs_delegate.dart';
-import '../../../features/auth/presentation/cubit/auth_bloc.dart';
-import '../../../features/auth/presentation/cubit/auth_state.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_events.dart';
-import '../../../features/usre_arguments/presentaion/bloc/user_states.dart';
-import '../../../features/movies/domain/entities/sub_entity/movie.dart';
+import '../../../../core/routes/app_route_name.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/movie_grid_item.dart';
+import '../../../../core/widgets/profile/profile_header.dart';
+import '../../../../core/widgets/profile/profile_tabs.dart';
+import '../../../../core/widgets/profile/profile_tabs_delegate.dart';
+import '../../../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../../../features/auth/presentation/cubit/auth_state.dart';
+import '../../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
+import '../../../../features/usre_arguments/presentaion/bloc/user_events.dart';
+import '../../../../features/usre_arguments/presentaion/bloc/user_states.dart';
+import '../../../../features/movies/domain/entities/sub_entity/movie.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,7 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-
     context.read<UserBloc>().add(GetFavoritesEvent());
     context.read<UserBloc>().add(GetHistoryEvent());
   }
@@ -89,9 +88,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
 
                       if (_selectedTab == 0)
-                        _buildMovieGrid(favorites, "No movies in Watchlist")
+                        _buildMovieGrid(
+                          favorites,
+                          "assets/icons/popcorn_icon.png",
+                        )
                       else
-                        _buildMovieGrid(history, "No movies in History"),
+                        _buildMovieGrid(
+                          history,
+                          "assets/icons/popcorn_icon.png",
+                        ),
 
                       SliverPadding(
                         padding: EdgeInsets.only(
@@ -109,14 +114,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildMovieGrid(List<MovieSubEntity> movies, String emptyMessage) {
+  Widget _buildMovieGrid(List<MovieSubEntity> movies, String imagePath) {
     if (movies.isEmpty) {
       return SliverFillRemaining(
         hasScrollBody: false,
         child: Center(
-          child: Text(
-            emptyMessage,
-            style: const TextStyle(color: AppColors.disabledText, fontSize: 16),
+          child: Image.asset(
+            imagePath,
+            width: 124,
+            height: 124,
+            fit: BoxFit.contain,
           ),
         ),
       );
