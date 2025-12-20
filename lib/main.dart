@@ -11,6 +11,7 @@ import 'core/routes/route_gen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/services/service_locater.dart' as di;
 import 'features/auth/presentation/cubit/auth_bloc.dart';
+import 'features/auth/presentation/cubit/auth_event.dart';
 import 'features/usre_arguments/presentaion/bloc/user_bloc.dart';
 import 'l10n/app_localizations.dart';
 
@@ -23,7 +24,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => di.sl<AuthBloc>()),
+        BlocProvider(create: (context) => di.sl<AuthBloc>()..add(CheckAuthStatusEvent()),),
 
         BlocProvider(create: (context) => di.sl<UserBloc>()),
       ],

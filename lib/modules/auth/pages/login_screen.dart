@@ -28,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isShowPassword = true;
+  String? _activeAction;
+
 
   @override
   void initState() {
@@ -54,6 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
+            setState(() {
+              _activeAction = null;
+            });
             Navigator.pushReplacementNamed(context, RouteName.layout);
 
             ScaffoldMessenger.of(context).showSnackBar(
@@ -179,10 +184,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           const Spacer(),
 
                           CustomBtn(
-                            isLoading: state is AuthLoading,
+                            isLoading: state is AuthLoading && _activeAction == 'email',
                             isExpanded: true,
                             onTap: () {
                               if (_formKey.currentState!.validate()) {
+                                setState(() {
+                                  _activeAction = 'email';
+                                });
                                 context.read<AuthBloc>().add(
                                   LoginEvent(
                                     params: LoginParams(
@@ -253,9 +261,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           const Spacer(),
 
                           CustomBtn(
-                            isLoading: state is AuthLoading,
+                            isLoading: state is AuthLoading && _activeAction == 'google',
                             isExpanded: true,
                             onTap: () {
+                              setState(() {
+                                _activeAction = 'google';
+                              });
                               context.read<AuthBloc>().add(
                                 LoginWithGoogleEvent(),
                               );

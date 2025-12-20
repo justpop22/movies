@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../features/auth/presentation/cubit/auth_bloc.dart';
+import '../../../features/auth/presentation/cubit/auth_state.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_bloc.dart';
+import '../../../features/movies/presentation/cubit/movie_list_cubit/movies_event.dart';
+import '../../../features/usre_arguments/presentaion/bloc/user_bloc.dart';
+import '../../../features/usre_arguments/presentaion/bloc/user_events.dart';
 import '../../../l10n/app_localizations.dart';
 import 'home/home_screen.dart';
 import 'search/search_screen.dart';
@@ -18,17 +26,19 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   late int currentIndex;
   late final List<Widget> screens;
+  String? currentBrowseCategory;
 
   @override
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
-    screens = [
-      HomeScreen(),
-      const SearchScreen(),
-      BrowseScreen(initialCategory: widget.initialCategory),
-      const ProfileScreen(),
-    ];
+    currentBrowseCategory = widget.initialCategory;
+  }
+
+  void _handleCategoryChange(String? newCategory) {
+    setState(() {
+      currentBrowseCategory = newCategory;
+    });
   }
 
   @override
@@ -36,7 +46,18 @@ class _MainLayoutState extends State<MainLayout> {
     var locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      body: screens[currentIndex],
+      body: IndexedStack(
+        index: currentIndex,
+        children: [
+          HomeScreen(),
+          const SearchScreen(),
+          BrowseScreen(
+            initialCategory: currentBrowseCategory,
+            onCategoryChanged: _handleCategoryChange,
+          ),
+          const ProfileScreen(),
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

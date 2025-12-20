@@ -11,23 +11,25 @@ import '../../../../l10n/app_localizations.dart';
 
 class BrowseScreen extends StatelessWidget {
   final String? initialCategory;
+  final Function(String?) onCategoryChanged;
 
 
-  const BrowseScreen({super.key, this.initialCategory});
+  const BrowseScreen({super.key, this.initialCategory, required this.onCategoryChanged});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<MoviesBloc>()
         ..add(GetMoviesEvent(params: MovieListParams(genre: initialCategory))),
-      child: _BrowseScreenContent(initialCategory: initialCategory),
+      child: _BrowseScreenContent(initialCategory: initialCategory, onCategoryChanged: onCategoryChanged),
     );
   }
 }
 
 class _BrowseScreenContent extends StatefulWidget {
   final String? initialCategory;
-  const _BrowseScreenContent({required this.initialCategory});
+  final Function(String?)? onCategoryChanged;
+  const _BrowseScreenContent({required this.initialCategory, this.onCategoryChanged});
 
   @override
   State<_BrowseScreenContent> createState() => _BrowseScreenContentState();
@@ -83,7 +85,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
         _selectedCategory = category;
       }
     });
-
+    widget.onCategoryChanged?.call(_selectedCategory);
     context.read<MoviesBloc>().add(ResetSearchEvent());
 
     context.read<MoviesBloc>().add(

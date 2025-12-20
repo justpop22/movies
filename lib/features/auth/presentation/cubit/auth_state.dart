@@ -12,7 +12,6 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-// Successfully Logged In
 class Authenticated extends AuthState {
   final UserEntity user;
   const Authenticated({required this.user});

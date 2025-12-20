@@ -3,6 +3,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:movies/core/params/movieparams.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+import '../../../domain/entities/sub_entity/movie.dart';
 import '../../../domain/usecases/get_movie_list.dart';
 import 'movies_event.dart';
 import 'movies_state.dart';
@@ -31,39 +32,13 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
 
     on<SearchMoviesEvent>(
       _onSearchMovies,
-      transformer: debounceRestartable(const Duration(milliseconds: 500)),
+      transformer: debounceRestartable(const Duration(milliseconds: 300)),
     );
+
     on<ResetSearchEvent>((event, emit) {
       page = 1;
       emit(MoviesInitial());
     });
-  }
-
-  Future<void> _onSearchMovies(
-    SearchMoviesEvent event,
-    Emitter<MoviesState> emit,
-  ) async {
-    emit(MoviesLoading());
-    page = 1;
-
-    try {
-      final result = await getMoviesList.call(
-        params: MovieListParams(queryTerm: event.queryTerm, page: page),
-      );
-
-      result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
-        wrapper,
-      ) {
-        emit(
-          MoviesLoaded(
-            movies: wrapper.movie,
-            hasReachedMax: wrapper.movie.isEmpty,
-          ),
-        );
-      });
-    } catch (e) {
-      emit(MoviesFailure(e.toString()));
-    }
   }
 
   Future<void> _onGetMovies(
@@ -76,47 +51,63 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       if (state is MoviesInitial) {
         emit(MoviesLoading());
         page = 1;
-
-        final result = await getMoviesList.call(
-          params: event.params.copyWith(page: page),
-        );
-
-        result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
-          wrapper,
-        ) {
-          page++;
-          emit(
-            MoviesLoaded(
-              movies: wrapper.movie,
-              hasReachedMax: wrapper.movie.isEmpty,
-            ),
-          );
-        });
-        return;
       }
 
-      if (state is MoviesLoaded) {
-        final currentState = state as MoviesLoaded;
-        final result = await getMoviesList.call(
-          params: event.params.copyWith(page: page),
-        );
+      final result = await getMoviesList.call(
+        params: event.params.copyWith(page: page),
+      );
 
-        result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
-          newMovieWrapper,
-        ) {
-          if (newMovieWrapper.movie.isEmpty) {
-            emit(currentState.copyWith(hasReachedMax: true));
-          } else {
-            page++;
-            emit(
-              MoviesLoaded(
-                movies: currentState.movies + newMovieWrapper.movie,
-                hasReachedMax: false,
-              ),
-            );
-          }
-        });
-      }
+      result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
+        wrapper,
+      ) {
+        final List<MovieSubEntity> oldMovies = (state is MoviesLoaded)
+            ? (state as MoviesLoaded).movies
+            : [];
+
+        final isLastPage = wrapper.movie.isEmpty;
+
+        if (!isLastPage) page++;
+
+        emit(
+          MoviesLoaded(
+            movies: oldMovies + wrapper.movie,
+            hasReachedMax: isLastPage,
+          ),
+        );
+      });
+    } catch (e) {
+      emit(MoviesFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onSearchMovies(
+    SearchMoviesEvent event,
+    Emitter<MoviesState> emit,
+  ) async {
+    if (event.queryTerm.trim().isEmpty) {
+      add(ResetSearchEvent());
+      return;
+    }
+
+    emit(MoviesLoading());
+    page = 1;
+
+    try {
+      final result = await getMoviesList.call(
+        params: MovieListParams(queryTerm: event.queryTerm, page: page),
+      );
+
+      result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
+        wrapper,
+      ) {
+        if (wrapper.movie.isNotEmpty) page++;
+        emit(
+          MoviesLoaded(
+            movies: wrapper.movie,
+            hasReachedMax: wrapper.movie.isEmpty,
+          ),
+        );
+      });
     } catch (e) {
       emit(MoviesFailure(e.toString()));
     }

@@ -47,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _trendingBloc.close();
     _pageController.dispose();
     _currentIndexNotifier.dispose();
     super.dispose();
