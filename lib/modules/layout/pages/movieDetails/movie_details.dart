@@ -49,128 +49,130 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
   @override
   Widget build(BuildContext context) {
     var locale = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      body: BlocBuilder<MovieDetailsBloc, MovieDetailsState>(
-        builder: (context, movieState) {
-          if (movieState is MovieDetailsLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.secondaryColor),
-            );
-          }
-          if (movieState is MovieDetailsFailure) {
-            return Center(
-              child: Text(
-                movieState.message,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          if (movieState is MovieDetailsLoaded) {
-            final movie = movieState.movieDetail;
-            final suggestions = movieState.suggestions;
-
-            return BlocBuilder<UserBloc, UserState>(
-              builder: (context, userState) {
-                bool isFavorite = false;
-                bool isBookMarked = false;
-
-                if (userState is UserDataLoaded) {
-                  isFavorite = userState.favorites.any((m) => m.id == movie.id);
-                  isBookMarked = userState.watchHistory.any(
-                    (m) => m.id == movie.id,
-                  );
-                }
-
-                return CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    MovieAppBar(
-                      movie: movie,
-                      isFavorite: isFavorite,
-                      isBookMarked: isBookMarked,
-                    ),
-
-                    SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.dangerColor,
-                                  foregroundColor: AppColors.primaryText,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                                child: Text(
-                                  locale.watch,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          MovieStats(
-                            rating: movie.rating,
-                            runtime: movie.runtime ?? 0,
-                            likeCount: movie.likeCount,
-                          ),
-                          const SizedBox(height: 20),
-
-                          MovieScreenshots(screenshotUrls: movie.screenshots),
-
-                          if (suggestions.isNotEmpty) ...[
-                            _buildSectionTitle(locale.similar),
-                            _buildSimilarMoviesList(suggestions),
-                          ],
-
-                          _buildSectionTitle(locale.summary),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              movie.descriptionFull.isNotEmpty
-                                  ? movie.descriptionFull
-                                  : locale.noDesAvail,
-                              style: const TextStyle(
-                                color: AppColors.secondaryText,
-                                fontSize: 15,
-                                height: 1.6,
-                              ),
-                            ),
-                          ),
-
-                          if (movie.cast.isNotEmpty) ...[
-                            _buildSectionTitle(locale.cast),
-                            MovieCast(castList: movie.cast),
-                          ],
-
-                          _buildSectionTitle(locale.genres),
-                          _buildGenresRow(movie.genres),
-
-                          const SizedBox(height: 40),
-                        ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColors.mainBackground,
+        body: BlocBuilder<MovieDetailsBloc, MovieDetailsState>(
+          builder: (context, movieState) {
+            if (movieState is MovieDetailsLoading) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.secondaryColor),
+              );
+            }
+            if (movieState is MovieDetailsFailure) {
+              return Center(
+                child: Text(
+                  movieState.message,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
+      
+            if (movieState is MovieDetailsLoaded) {
+              final movie = movieState.movieDetail;
+              final suggestions = movieState.suggestions;
+      
+              return BlocBuilder<UserBloc, UserState>(
+                builder: (context, userState) {
+                  bool isFavorite = false;
+                  bool isBookMarked = false;
+      
+                  if (userState is UserDataLoaded) {
+                    isFavorite = userState.favorites.any((m) => m.id == movie.id);
+                    isBookMarked = userState.watchHistory.any(
+                      (m) => m.id == movie.id,
+                    );
+                  }
+      
+                  return CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      MovieAppBar(
+                        movie: movie,
+                        isFavorite: isFavorite,
+                        isBookMarked: isBookMarked,
                       ),
-                    ),
-                  ],
-                );
-              },
-            );
-          }
-          return const SizedBox();
-        },
+      
+                      SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.dangerColor,
+                                    foregroundColor: AppColors.primaryText,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    locale.watch,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+      
+                            MovieStats(
+                              rating: movie.rating,
+                              runtime: movie.runtime ?? 0,
+                              likeCount: movie.likeCount,
+                            ),
+                            const SizedBox(height: 20),
+      
+                            MovieScreenshots(screenshotUrls: movie.screenshots),
+      
+                            if (suggestions.isNotEmpty) ...[
+                              _buildSectionTitle(locale.similar),
+                              _buildSimilarMoviesList(suggestions),
+                            ],
+      
+                            _buildSectionTitle(locale.summary),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                movie.descriptionFull.isNotEmpty
+                                    ? movie.descriptionFull
+                                    : locale.noDesAvail,
+                                style: const TextStyle(
+                                  color: AppColors.secondaryText,
+                                  fontSize: 15,
+                                  height: 1.6,
+                                ),
+                              ),
+                            ),
+      
+                            if (movie.cast.isNotEmpty) ...[
+                              _buildSectionTitle(locale.cast),
+                              MovieCast(castList: movie.cast),
+                            ],
+      
+                            _buildSectionTitle(locale.genres),
+                            _buildGenresRow(movie.genres),
+      
+                            const SizedBox(height: 40),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            return const SizedBox();
+          },
+        ),
       ),
     );
   }

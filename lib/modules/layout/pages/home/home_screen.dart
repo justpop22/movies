@@ -56,185 +56,187 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            SizedBox(
-              height: screenHeight * 0.65,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: BlocBuilder<MoviesBloc, MoviesState>(
-                      bloc: _trendingBloc,
-                      builder: (context, state) {
-                        if (state is! MoviesLoaded || state.movies.isEmpty) {
-                          return Container(color: Colors.black);
-                        }
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              SizedBox(
+                height: screenHeight * 0.65,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: BlocBuilder<MoviesBloc, MoviesState>(
+                        bloc: _trendingBloc,
+                        builder: (context, state) {
+                          if (state is! MoviesLoaded || state.movies.isEmpty) {
+                            return Container(color: Colors.black);
+                          }
 
-                        return ValueListenableBuilder<int>(
-                          valueListenable: _currentIndexNotifier,
-                          builder: (context, index, _) {
-                            final safeIndex = index.clamp(
-                              0,
-                              state.movies.length - 1,
-                            );
-                            final movie = state.movies[safeIndex];
-                            final imagePath =
-                                movie.largeCoverImage ??
-                                movie.mediumCoverImage ??
-                                "";
-
-                            return AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 500),
-                              child: Stack(
-                                key: ValueKey(imagePath),
-                                fit: StackFit.expand,
-                                children: [
-                                  if (imagePath.isNotEmpty)
-                                    Image.network(
-                                      imagePath,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) =>
-                                          const SizedBox(),
-                                    ),
-                                  Container(
-                                    color: Colors.black.withOpacity(0.4),
-                                  ),
-                                  BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                      sigmaX: 8.0,
-                                      sigmaY: 8.0,
-                                    ),
-                                    child: Container(
-                                      color: Colors.black.withOpacity(0.2),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 30),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Center(
-                          child: Image.asset(
-                            "assets/images/Available.png",
-                            width: 250,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-
-                      Expanded(
-                        child: BlocBuilder<MoviesBloc, MoviesState>(
-                          bloc: _trendingBloc,
-                          builder: (context, state) {
-                            if (state is MoviesLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.secondaryColor,
-                                ),
+                          return ValueListenableBuilder<int>(
+                            valueListenable: _currentIndexNotifier,
+                            builder: (context, index, _) {
+                              final safeIndex = index.clamp(
+                                0,
+                                state.movies.length - 1,
                               );
-                            }
-                            if (state is MoviesLoaded) {
-                              return PageView.builder(
-                                controller: _pageController,
-                                itemCount: state.movies.length,
-                                onPageChanged: (index) {
-                                  _currentIndexNotifier.value = index;
-                                },
-                                itemBuilder: (context, index) {
-                                  final movie = state.movies[index];
+                              final movie = state.movies[safeIndex];
+                              final imagePath =
+                                  movie.largeCoverImage ??
+                                  movie.mediumCoverImage ??
+                                  "";
 
-                                  return AnimatedBuilder(
-                                    animation: _pageController,
-                                    builder: (context, child) {
-                                      double page = index.toDouble();
-                                      if (_pageController
-                                          .position
-                                          .haveDimensions) {
-                                        page =
-                                            _pageController.page ??
-                                            index.toDouble();
-                                      }
-                                      final double scale =
-                                          (1 - (page - index).abs() * 0.15)
-                                              .clamp(0.85, 1.0);
-
-                                      return Transform.scale(
-                                        scale: scale,
-                                        child: child,
-                                      );
-                                    },
-
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MovieDetailsScreen(
-                                                  movieId: movie.id,
-                                                ),
-                                          ),
-                                        );
-                                      },
-                                      child: _buildLargePoster(
-                                        movie.largeCoverImage ??
-                                            movie.mediumCoverImage ??
-                                            "",
-                                        movie.rating.toString(),
+                              return AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 500),
+                                child: Stack(
+                                  key: ValueKey(imagePath),
+                                  fit: StackFit.expand,
+                                  children: [
+                                    if (imagePath.isNotEmpty)
+                                      Image.network(
+                                        imagePath,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            const SizedBox(),
+                                      ),
+                                    Container(
+                                      color: Colors.black.withOpacity(0.4),
+                                    ),
+                                    BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 8.0,
+                                        sigmaY: 8.0,
+                                      ),
+                                      child: Container(
+                                        color: Colors.black.withOpacity(0.2),
                                       ),
                                     ),
-                                  );
-                                },
+                                  ],
+                                ),
                               );
-                            }
-                            return const SizedBox();
-                          },
-                        ),
+                            },
+                          );
+                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Center(
-                          child: Image.asset(
-                            "assets/images/Watch Now.png",
-                            width: 250,
-                            fit: BoxFit.contain,
+                    ),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 30),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/images/Available.png",
+                              width: 250,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, top: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ..._categories.map(
-                    (category) => CategoryMovieRow(category: category),
-                  ),
-                  const SizedBox(height: 50),
-                ],
+                        Expanded(
+                          child: BlocBuilder<MoviesBloc, MoviesState>(
+                            bloc: _trendingBloc,
+                            builder: (context, state) {
+                              if (state is MoviesLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.secondaryColor,
+                                  ),
+                                );
+                              }
+                              if (state is MoviesLoaded) {
+                                return PageView.builder(
+                                  controller: _pageController,
+                                  itemCount: state.movies.length,
+                                  onPageChanged: (index) {
+                                    _currentIndexNotifier.value = index;
+                                  },
+                                  itemBuilder: (context, index) {
+                                    final movie = state.movies[index];
+
+                                    return AnimatedBuilder(
+                                      animation: _pageController,
+                                      builder: (context, child) {
+                                        double page = index.toDouble();
+                                        if (_pageController
+                                            .position
+                                            .haveDimensions) {
+                                          page =
+                                              _pageController.page ??
+                                              index.toDouble();
+                                        }
+                                        final double scale =
+                                            (1 - (page - index).abs() * 0.15)
+                                                .clamp(0.85, 1.0);
+
+                                        return Transform.scale(
+                                          scale: scale,
+                                          child: child,
+                                        );
+                                      },
+
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MovieDetailsScreen(
+                                                    movieId: movie.id,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                        child: _buildLargePoster(
+                                          movie.largeCoverImage ??
+                                              movie.mediumCoverImage ??
+                                              "",
+                                          movie.rating.toString(),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                              return const SizedBox();
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/images/Watch Now.png",
+                              width: 250,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, top: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ..._categories.map(
+                      (category) => CategoryMovieRow(category: category),
+                    ),
+                    const SizedBox(height: 50),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
