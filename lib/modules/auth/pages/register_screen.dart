@@ -10,6 +10,7 @@ import '../../../../core/services/service_locater.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_btn.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../core/widgets/avatar.dart';
 import '../../../features/auth/presentation/cubit/auth_bloc.dart';
 import '../../../features/auth/presentation/cubit/auth_event.dart';
 import '../../../features/auth/presentation/cubit/auth_state.dart';
@@ -113,55 +114,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Column(
                         children: [
                           const Spacer(),
-
-                          SizedBox(
-                            height: 100,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              itemCount: _avatars.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(width: 10),
-                              itemBuilder: (context, index) {
-                                final isSelected = selectedAvatarIndex == index;
-                                return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedAvatarIndex = index;
-                                    });
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: isSelected
-                                          ? Border.all(
-                                              color: AppColors.secondaryColor,
-                                              width: 3,
-                                            )
-                                          : null,
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 35,
-                                      backgroundImage: AssetImage(
-                                        _avatars[index],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-
-                          const SizedBox(height: 8),
-                          const Text(
-                            "Choose Avatar",
-                            style: TextStyle(
+                          AvatarPicker(
+                            avatarList: _avatars,
+                            avatarRadius: 70,
+                            initialAvatar: _avatars[selectedAvatarIndex],
+                            onAvatarChanged: (avatarPath) {
+                              setState(() {
+                                selectedAvatarIndex = _avatars.indexOf(avatarPath);
+                              });
+                            },
+                          ),                          SizedBox(height: 12,),
+                          Text("Avatar",style: TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                              fontWeight: FontWeight.bold
+                          ),),
                           const Spacer(),
 
                           TextFormField(

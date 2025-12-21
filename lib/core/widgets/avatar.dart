@@ -15,7 +15,7 @@ class AvatarPicker extends StatefulWidget {
   });
 
   @override
-  _AvatarPickerState createState() => _AvatarPickerState();
+  State<AvatarPicker> createState() => _AvatarPickerState();
 }
 
 class _AvatarPickerState extends State<AvatarPicker> {
@@ -29,17 +29,19 @@ class _AvatarPickerState extends State<AvatarPicker> {
 
     selectedAvatar = widget.initialAvatar ?? widget.avatarList[0];
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onAvatarChanged(selectedAvatar);
-    });
-
     initialPage = 1000 * widget.avatarList.length;
+
     _pageController = PageController(
       initialPage: initialPage,
       viewportFraction: 0.40,
     );
+
     _pageController.addListener(() {
       setState(() {});
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onAvatarChanged(selectedAvatar);
     });
   }
 
@@ -56,38 +58,39 @@ class _AvatarPickerState extends State<AvatarPicker> {
       child: PageView.builder(
         controller: _pageController,
         onPageChanged: (index) {
-          int actualIndex = index % widget.avatarList.length;
-          final newAvatar = widget.avatarList[actualIndex];
+          final actualIndex = index % widget.avatarList.length;
+          final avatar = widget.avatarList[actualIndex];
 
           setState(() {
-            selectedAvatar = newAvatar;
+            selectedAvatar = avatar;
           });
-          widget.onAvatarChanged(newAvatar);
+
+          widget.onAvatarChanged(avatar);
         },
         itemBuilder: (context, index) {
-          int actualIndex = index % widget.avatarList.length;
-          String currentAvatarPath = widget.avatarList[actualIndex];
+          final actualIndex = index % widget.avatarList.length;
+          final avatarPath = widget.avatarList[actualIndex];
 
-          double page = _pageController.hasClients
-              ? _pageController.page ?? 0
-              : 0;
-          double distance = (index - page).abs();
+          final page =
+          _pageController.hasClients ? _pageController.page ?? 0 : 0;
+          final distance = (index - page).abs();
 
           double scale = 1.0 - (distance * 0.2);
           if (scale < 1.0) scale = 0.6;
 
-          if (selectedAvatar == currentAvatarPath) {
+          if (selectedAvatar == avatarPath) {
             scale = 1.1;
           }
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 2),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  selectedAvatar = currentAvatarPath;
+                  selectedAvatar = avatarPath;
                 });
-                widget.onAvatarChanged(currentAvatarPath);
+
+                widget.onAvatarChanged(avatarPath);
 
                 _pageController.animateToPage(
                   index,
@@ -99,7 +102,7 @@ class _AvatarPickerState extends State<AvatarPicker> {
                 scale: scale,
                 child: CircleAvatar(
                   radius: widget.avatarRadius,
-                  backgroundImage: AssetImage(currentAvatarPath),
+                  backgroundImage: AssetImage(avatarPath),
                 ),
               ),
             ),
