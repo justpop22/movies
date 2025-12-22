@@ -74,7 +74,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneController = TextEditingController();
     currentAvatarPath = widget.initialAvatarPath;
 
-    context.read<UserBloc>().add(GetUserInfoEvent());
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserDataLoaded) {
+      _populateFields(userState.user!);
+    }
+  }
+
+  void _populateFields(UserEntity user) {
+    currentUser = user;
+    _nameController.text = user.displayName;
+    _phoneController.text = user.phoneNumber ?? "";
+    if (user.avatarId != null) {
+      currentAvatarPath = _getAvatarPathFromId(user.avatarId);
+    }
   }
 
   @override
@@ -85,17 +97,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _onSave() {
-    if (currentUser != null) {
-      final updatedUser = UserEntity(
-        uid: currentUser!.uid,
-        email: currentUser!.email,
-        displayName: _nameController.text.trim(),
-        phoneNumber: _phoneController.text.trim(),
-        avatarId: _getAvatarIdFromPath(currentAvatarPath),
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User data not loaded yet")),
       );
-
-      context.read<UserBloc>().add(UpdateUserEvent(updatedUser));
+      return;
     }
+
+    final updatedUser = UserEntity(
+      uid: currentUser!.uid,
+      email: currentUser!.email,
+      displayName: _nameController.text.trim(),
+      phoneNumber: _phoneController.text.trim(),
+      avatarId: _getAvatarIdFromPath(currentAvatarPath),
+    );
+
+    context.read<UserBloc>().add(UpdateUserEvent(updatedUser));
   }
 
   void _showAvatarSheet() {
@@ -123,16 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       listeners: [
         BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            if (state is UserDataLoaded) {
-              currentUser = state.user;
-              _nameController.text = state.user!.displayName;
-              _phoneController.text = state.user?.phoneNumber ?? "";
-
-              if (state.user?.avatarId != null) {
-                currentAvatarPath = _getAvatarPathFromId(state.user?.avatarId);
-              }
-              setState(() {});
-            } else if (state is UserInfoUpdated) {
+            if (state is UserInfoUpdated) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text("Profile Updated!"),
@@ -316,14 +324,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
                             if (state is UserLoading) {
-                              return const CircularProgressIndicator(
-                                color: Colors.black,
+                              return const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                  strokeWidth: 2,
+                                ),
                               );
                             }
 
                             return Text(
                               locale.updateData,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -351,7 +364,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         child: Text(
                           locale.deleteAccount,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

@@ -43,4 +43,11 @@ class CacheManager {
   static Future<bool> remove({required String key}) async {
     return await _prefs.remove(key);
   }
+  static Future<void> setLanguage(String lang) async {
+    await _prefs.setString('language', lang);
+  }
+
+  static String getLanguage() {
+    return _prefs.getString('language') ?? 'en';
+  }
 }

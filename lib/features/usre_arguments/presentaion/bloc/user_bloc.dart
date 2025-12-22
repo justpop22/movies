@@ -134,11 +134,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     });
 
     on<UpdateUserEvent>((event, emit) async {
-      final currentData = _currentUserData;
+      emit(UserLoading());
+
       final result = await updateUser(event.user);
+
       result.fold(
-        (l) => emit(UserError(l.errMessagge)),
-        (user) => emit(currentData.copyWith(user: user)),
+            (l) => emit(UserError(l.errMessagge)),
+            (user) {
+          emit(UserInfoUpdated(user));
+
+          emit(UserDataLoaded(user: user));
+        },
       );
     });
   }
