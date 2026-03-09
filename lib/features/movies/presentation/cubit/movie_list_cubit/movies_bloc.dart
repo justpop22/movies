@@ -42,35 +42,38 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
   }
 
   Future<void> _onGetMovies(
-    GetMoviesEvent event,
-    Emitter<MoviesState> emit,
-  ) async {
+      GetMoviesEvent event,
+      Emitter<MoviesState> emit,
+      ) async {
+    // 1. Stop if we have already fetched the very last page
     if (state is MoviesLoaded && (state as MoviesLoaded).hasReachedMax) return;
 
     try {
+      // 2. Only show the full-screen loading spinner on the VERY FIRST fetch
       if (state is MoviesInitial) {
         emit(MoviesLoading());
         page = 1;
       }
 
+      // 3. Fetch using the current page
       final result = await getMoviesList.call(
         params: event.params.copyWith(page: page),
       );
 
       result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
-        wrapper,
-      ) {
-        final List<MovieSubEntity> oldMovies = (state is MoviesLoaded)
-            ? (state as MoviesLoaded).movies
-            : [];
-
+          wrapper,
+          ) {
         final isLastPage = wrapper.movie.isEmpty;
 
-        if (!isLastPage) page++;
+        if (!isLastPage) {
+          page++;
+        }
 
         emit(
           MoviesLoaded(
-            movies: oldMovies + wrapper.movie,
+            // REMOVE oldMovies + wrapper.movie
+            // JUST USE wrapper.movie since it already has everything!
+            movies: wrapper.movie,
             hasReachedMax: isLastPage,
           ),
         );
@@ -81,14 +84,15 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
   }
 
   Future<void> _onSearchMovies(
-    SearchMoviesEvent event,
-    Emitter<MoviesState> emit,
-  ) async {
+      SearchMoviesEvent event,
+      Emitter<MoviesState> emit,
+      ) async {
     if (event.queryTerm.trim().isEmpty) {
       add(ResetSearchEvent());
       return;
     }
 
+    // Always reset to page 1 and show loading when starting a new search
     emit(MoviesLoading());
     page = 1;
 
@@ -98,9 +102,12 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       );
 
       result.fold((failure) => emit(MoviesFailure(failure.errMessagge)), (
-        wrapper,
-      ) {
-        if (wrapper.movie.isNotEmpty) page++;
+          wrapper,
+          ) {
+        if (wrapper.movie.isNotEmpty) {
+          page++;
+        }
+
         emit(
           MoviesLoaded(
             movies: wrapper.movie,
