@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/theme/app_colors.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -13,7 +14,7 @@ class MovieCast extends StatelessWidget {
     if (castList.isEmpty) return const SizedBox();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20).r,
       child: Column(
         children: castList.map((actor) {
           final String name = actor.name ?? locale.unknown;
@@ -21,11 +22,11 @@ class MovieCast extends StatelessWidget {
           final String characterName = actor.characterName ?? locale.unknown;
 
           return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(12),
+            margin: EdgeInsets.only(bottom: 12).r,
+            padding: EdgeInsets.all(12).w,
             decoration: BoxDecoration(
               color: AppColors.headerBackground,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12).w,
             ),
             child: Row(
               children: [
@@ -39,25 +40,25 @@ class MovieCast extends StatelessWidget {
                       ? const Icon(Icons.person, color: Colors.white)
                       : null,
                 ),
-                const SizedBox(width: 15),
+                SizedBox(width: 15.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                       Text(
                         characterName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.secondaryText,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ],

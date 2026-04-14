@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../features/auth/presentation/cubit/auth_bloc.dart';
@@ -60,11 +61,11 @@ class _MainLayoutState extends State<MainLayout> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12).r,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16).w,
             child: SizedBox(
-              height: 60,
+              height: 60.h,
               child: BottomNavigationBar(
                 currentIndex: currentIndex,
                 onTap: (index) => setState(() => currentIndex = index),

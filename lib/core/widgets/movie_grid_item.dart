@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/theme/app_colors.dart';
 import '../../modules/layout/pages/movieDetails/movie_details.dart';
 
@@ -38,7 +39,7 @@ class MovieGridItem extends StatelessWidget {
 
           return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10).w,
               image: DecorationImage(
                 image: NetworkImage(imagePath),
                 fit: BoxFit.cover,
@@ -49,7 +50,7 @@ class MovieGridItem extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10).w,
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -70,7 +71,7 @@ class MovieGridItem extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8).w,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -80,7 +81,7 @@ class MovieGridItem extends StatelessWidget {
                           color: AppColors.secondaryColor,
                           size: iconSize,
                         ),
-                        SizedBox(width: cardWidth * 0.03),
+                        SizedBox(width: (cardWidth * 0.03).w),
                         Text(
                           rating,
                           style: TextStyle(

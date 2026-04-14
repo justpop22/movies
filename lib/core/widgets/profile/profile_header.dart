@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_btn.dart';
 import '../dialogs/exit_dialog.dart';
@@ -69,11 +70,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
         return Container(
           color: AppColors.headerBackground,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10).r,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
 
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -102,15 +103,15 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 : null,
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        SizedBox(height: 15.h),
                         Text(
                           currentUser?.displayName ?? locale.guestUser,
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.primaryText,
-                            fontSize: 20,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -139,7 +140,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 ],
               ),
 
-              const SizedBox(height: 25),
+              SizedBox(height: 25.h),
 
               Row(
                 children: [
@@ -168,7 +169,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       isExpanded: true,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10.w),
                   Expanded(
                     flex: 1,
                     child: CustomBtn(
@@ -183,7 +184,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
             ],
           ),
         );

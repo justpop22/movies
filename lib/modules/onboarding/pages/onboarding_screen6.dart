@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
@@ -24,16 +25,16 @@ class OnboardingScreen6 extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40).w,
+                topRight: Radius.circular(40).w,
               ),
               child: Container(
                 color: Color(0xff121312),
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 40,
-                ),
+                ).r,
                 width: double.infinity,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -41,15 +42,15 @@ class OnboardingScreen6 extends StatelessWidget {
                     Text(
                       "Start Watching Now",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.bold,
-                        height: 1.3,
+                        height: 1.3.h,
                       ),
                     ),
 
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
 
                     ValueListenableBuilder<int>(
                       valueListenable: globalCurrentPage,
@@ -79,7 +80,7 @@ class OnboardingScreen6 extends StatelessWidget {
                                 );
                               },
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 10.h),
 
                             Visibility(
                               visible: current != 0,

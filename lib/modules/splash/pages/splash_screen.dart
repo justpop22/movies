@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/services/service_locater.dart';
@@ -37,7 +38,7 @@ class SplashScreen extends StatelessWidget {
                   "Movie Player",
                   style: TextStyle(
                     color: AppColors.secondaryColor,
-                    fontSize: 36,
+                    fontSize: 36.sp,
                   ),
                 ),
               ),

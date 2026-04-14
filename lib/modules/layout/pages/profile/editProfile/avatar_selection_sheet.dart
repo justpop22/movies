@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -29,7 +30,7 @@ class AvatarSelectionSheet extends StatelessWidget {
     var locale = AppLocalizations.of(context)!;
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
-      padding: const EdgeInsets.all(20.0),
+      padding: EdgeInsets.all(20.0).w,
       decoration: const BoxDecoration(
         color: AppColors.mainBackground,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -37,24 +38,24 @@ class AvatarSelectionSheet extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 40,
-            height: 5,
+            width: 40.w,
+            height: 5.h,
             decoration: BoxDecoration(
               color: AppColors.disabledText,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10).w,
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15.h),
 
           Text(
           locale.pickAvatar,
             style: TextStyle(
               color: AppColors.secondaryColor,
-              fontSize: 18,
+              fontSize: 18.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
 
           Expanded(
             child: GridView.builder(
@@ -81,12 +82,12 @@ class AvatarSelectionSheet extends StatelessWidget {
                       border: isSelected
                           ? Border.all(
                               color: AppColors.secondaryColor,
-                              width: 4,
+                              width: 4.w,
                             )
                           : null,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: EdgeInsets.all(4.0).w,
                       child: CircleAvatar(
                         backgroundImage: AssetImage(avatarPath),
                         backgroundColor: AppColors.headerBackground,

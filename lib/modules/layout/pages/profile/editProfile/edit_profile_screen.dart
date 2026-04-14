@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/widgets/dialogs/delete_dialog.dart';
 import '../../../../../../core/routes/app_route_name.dart';
 import '../../../../../../core/theme/app_colors.dart';
@@ -197,14 +198,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 12,
-                  ),
+                  ).r,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
 
                       GestureDetector(
                         onTap: _showAvatarSheet,
@@ -215,11 +216,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: AppColors.secondaryColor,
-                                  width: 2,
+                                  width: 2.w,
                                 ),
                               ),
                               child: CircleAvatar(
-                                radius: 60,
+                                radius: 60.r,
                                 backgroundImage: isNetworkImage
                                     ? CachedNetworkImageProvider(
                                             currentAvatarPath,
@@ -232,14 +233,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               bottom: 0,
                               right: 0,
                               child: Container(
-                                width: 36,
-                                height: 36,
+                                width: 36.w,
+                                height: 36.h,
                                 decoration: BoxDecoration(
                                   color: AppColors.secondaryColor,
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: Colors.black,
-                                    width: 2,
+                                    width: 2.w,
                                   ),
                                 ),
                                 child: const Icon(
@@ -253,7 +254,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 40),
+                      SizedBox(height: 40.h),
 
                       CustomTextField(
                         controller: _nameController,
@@ -261,7 +262,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         icon: Icons.person,
                         inputType: TextInputType.name,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
 
                       CustomTextField(
                         controller: _phoneController,
@@ -269,7 +270,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         icon: Icons.phone,
                         inputType: TextInputType.phone,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
 
                       Align(
                         alignment: Alignment.centerLeft,
@@ -289,7 +290,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             locale.resetPassword,
                             style: TextStyle(
                               color: AppColors.secondaryText,
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w500,
                               decoration: TextDecoration.underline,
                               decorationColor: AppColors.secondaryText,
@@ -297,7 +298,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                     ],
                   ),
                 ),
@@ -310,13 +311,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
+                      height: 56.h,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondaryColor,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12).w,
                           ),
                           elevation: 2,
                         ),
@@ -324,9 +325,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
                             if (state is UserLoading) {
-                              return const SizedBox(
-                                height: 24,
-                                width: 24,
+                              return SizedBox(
+                                height: 24.h,
+                                width: 24.w,
                                 child: CircularProgressIndicator(
                                   color: Colors.black,
                                   strokeWidth: 2,
@@ -336,8 +337,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                             return Text(
                               locale.updateData,
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: TextStyle(
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             );
@@ -345,17 +346,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    SizedBox(height: 15.h),
 
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
+                      height: 56.h,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.dangerColor,
                           foregroundColor: AppColors.primaryText,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12).w,
                           ),
                           elevation: 2,
                         ),
@@ -364,8 +365,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         child: Text(
                           locale.deleteAccount,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

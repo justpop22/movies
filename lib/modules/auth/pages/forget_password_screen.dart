@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/services/service_locater.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/widgets/custom_btn.dart';
@@ -60,7 +61,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0).w,
                 child: Form(
                   key: _formKey,
                   child: ConstrainedBox(
@@ -96,7 +97,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                               hintText: locale.email,
                             ),
                           ),
-                          const SizedBox(height: 28),
+                          SizedBox(height: 28.h),
 
                           CustomBtn(
                             isExpanded: true,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
@@ -52,34 +53,34 @@ class OnboardingScreen1 extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: 24.0,
                 vertical: 60,
-              ),
+              ).r,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     "Find Your Next\nFavorite Movie Here",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 36,
+                      fontSize: 36.sp,
                       fontWeight: FontWeight.bold,
-                      height: 1.3,
+                      height: 1.3.h,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Text(
                     "Get access to a huge library of movies to suit all tastes. You will surely like it.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 20.sp,
                       color: Colors.grey[200],
-                      height: 1.4,
+                      height: 1.4.h,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
 
                   ValueListenableBuilder<int>(
                     valueListenable: globalCurrentPage,
@@ -109,6 +110,7 @@ class OnboardingScreen1 extends StatelessWidget {
                               );
                             },
                           ),
+                          SizedBox(height: 10.h),
                           Visibility(
                             visible: current != 0,
                             child: CustomBtn(

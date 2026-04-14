@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AvatarPicker extends StatefulWidget {
   final List<String> avatarList;
@@ -83,7 +84,7 @@ class _AvatarPickerState extends State<AvatarPicker> {
           }
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 2).r,
             child: GestureDetector(
               onTap: () {
                 setState(() {

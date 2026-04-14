@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/params/movieparams.dart';
 import '../../../../core/services/service_locater.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _trendingBloc = sl<MoviesBloc>()
       ..add(GetMoviesEvent(params: MovieListParams(sortBy: 'download_count')));
 
-    _pageController = PageController(viewportFraction: 0.8, initialPage: 0);
+    _pageController = PageController(viewportFraction: 0.7, initialPage: 0);
   }
 
   @override
@@ -64,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               SizedBox(
-                height: screenHeight * 0.65,
+                height: (screenHeight * 0.65).h,
                 child: Stack(
                   children: [
                     Positioned.fill(
@@ -125,14 +126,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30.h),
 
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          padding: EdgeInsets.symmetric(horizontal: 25.0).r,
                           child: Center(
                             child: Image.asset(
                               "assets/images/Available.png",
-                              width: 250,
+                              width: 250.w,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -208,11 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          padding: EdgeInsets.symmetric(horizontal: 25.0).r,
                           child: Center(
                             child: Image.asset(
                               "assets/images/Watch Now.png",
-                              width: 250,
+                              width: 250.w,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -224,14 +225,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               Padding(
-                padding: const EdgeInsets.only(left: 20.0, top: 10),
+                padding: EdgeInsets.only(left: 20.0, top: 10).r,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ..._categories.map(
                       (category) => CategoryMovieRow(category: category),
                     ),
-                    const SizedBox(height: 50),
+                    SizedBox(height: 50.h),
                   ],
                 ),
               ),
@@ -244,10 +245,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildLargePoster(String imageUrl, String rate) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0).r,
 
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(20.0).w,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.5),
@@ -260,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
         alignment: Alignment.center,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(20.0).w,
             child: imageUrl.isNotEmpty
                 ? Image.network(
                     imageUrl,
@@ -282,26 +283,26 @@ class _HomeScreenState extends State<HomeScreen> {
             top: 20,
             left: 20,
             child: Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: 12.0,
                 vertical: 8.0,
-              ),
+              ).r,
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(12.0),
+                borderRadius: BorderRadius.circular(12.0).w,
                 border: Border.all(color: Colors.white.withOpacity(0.2)),
               ),
               child: Row(
                 children: [
                   Text(
                     rate,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4.w),
                   const Icon(Icons.star, color: Colors.amber, size: 18),
                 ],
               ),
@@ -343,17 +344,17 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 30),
+        SizedBox(height: 30.h),
 
         Padding(
-          padding: const EdgeInsets.only(right: 20.0, bottom: 15),
+          padding: EdgeInsets.only(right: 20.0, bottom: 15).r,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 widget.category,
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -375,7 +376,7 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
                     Text(
                       locale.seeMore,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 14.sp,
                         color: AppColors.secondaryColor,
                       ),
                     ),
@@ -392,7 +393,7 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
         ),
 
         SizedBox(
-          height: 200,
+          height: 200.h,
           child: BlocBuilder<MoviesBloc, MoviesState>(
             bloc: _bloc,
             builder: (context, state) {
@@ -420,8 +421,8 @@ class _CategoryMovieRowState extends State<CategoryMovieRow> {
                     final movie = state.movies[index];
 
                     return Container(
-                      width: 130,
-                      margin: const EdgeInsets.only(right: 14.0),
+                      width: 130.w,
+                      margin: EdgeInsets.only(right: 14.0).r,
                       child: MovieGridItem(
                         movieId: movie.id,
                         rating: movie.rating.toString(),

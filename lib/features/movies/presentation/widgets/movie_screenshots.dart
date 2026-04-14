@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/theme/app_colors.dart';
 import 'package:movies/l10n/app_localizations.dart';
 class MovieScreenshots extends StatelessWidget {
@@ -24,23 +25,23 @@ class MovieScreenshots extends StatelessWidget {
               locale.screenshots,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 19,
+                fontSize: 19.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20).r,
           child: Column(
             children: screenshotUrls.map((url) {
               return FadeInUp(
                 delay: const Duration(milliseconds: 200),
                 duration: const Duration(milliseconds: 500),
                 child: Container(
-                  width: double.infinity,
-                  height: 180,
-                  margin: const EdgeInsets.only(bottom: 15),
+                  width: double.infinity.w,
+                  height: 180.h,
+                  margin: EdgeInsets.only(bottom: 15).r,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     color: AppColors.headerBackground,

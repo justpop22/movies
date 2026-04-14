@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/theme/app_colors.dart';
 import '../../../movies/domain/entities/movie_detail_entity.dart';
 import '../../../movies/domain/entities/sub_entity/movie.dart';
@@ -23,7 +24,7 @@ class MovieAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       backgroundColor: AppColors.headerBackground,
-      expandedHeight: 450.0,
+      expandedHeight: 450.0.h,
       pinned: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
@@ -100,7 +101,7 @@ class MovieAppBar extends StatelessWidget {
               child: FadeIn(
                 duration: const Duration(milliseconds: 500),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16).w,
                   decoration: BoxDecoration(
                     color: AppColors.secondaryColor.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
@@ -125,9 +126,9 @@ class MovieAppBar extends StatelessWidget {
                     Text(
                       movie.title,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 30,
+                        fontSize: 30.sp,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
@@ -138,12 +139,12 @@ class MovieAppBar extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       "${movie.year}",
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.secondaryText,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/services/service_locater.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/params/movieparams.dart';
@@ -81,7 +82,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
             SliverAppBar(
               backgroundColor: AppColors.mainBackground,
               automaticallyImplyLeading: false,
-              toolbarHeight: 80,
+              toolbarHeight: 80.h,
               title: _buildSearchField(),
               floating: true,
               pinned: true,
@@ -127,7 +128,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                   }
 
                   return SliverPadding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.0).w,
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
                             (context, index) {
@@ -174,16 +175,16 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
   Widget _buildSearchField() {
     var locale = AppLocalizations.of(context)!;
     return Container(
-      height: 50,
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      height: 50.h,
+      margin: EdgeInsets.symmetric(vertical: 10).r,
       decoration: BoxDecoration(
         color: AppColors.headerBackground,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12).w,
       ),
       child: TextField(
         controller: _searchController,
         onChanged: _onSearchChanged,
-        style: TextStyle(color: Colors.white, fontSize: 16),
+        style: TextStyle(color: Colors.white, fontSize: 16.sp),
         cursorColor: AppColors.secondaryColor,
         decoration: InputDecoration(
           hintText: locale.searchByTitle,
@@ -206,10 +207,10 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
             },
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
+          contentPadding: EdgeInsets.symmetric(
             vertical: 14,
             horizontal: 10,
-          ),
+          ).r,
         ),
       ),
     );
@@ -220,11 +221,11 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset("assets/icons/popcorn_icon.png", height: 124, width: 124),
-          const SizedBox(height: 16),
+          Image.asset("assets/icons/popcorn_icon.png", height: 124.h, width: 124.w),
+          SizedBox(height: 16.h),
           Text(
             message,
-            style: const TextStyle(color: AppColors.disabledText, fontSize: 16),
+            style: TextStyle(color: AppColors.disabledText, fontSize: 16.sp),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/params/login_params.dart';
@@ -81,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0).w,
                 child: Form(
                   key: _formKey,
                   child: ConstrainedBox(
@@ -122,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintText: locale.email,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
 
                           TextFormField(
                             controller: _passwordController,
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -233,14 +234,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(
-                                width: 100,
+                              SizedBox(
+                                width: 100.w,
                                 child: Divider(
                                   color: AppColors.secondaryColor,
                                   thickness: 1,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8.w),
                               Text(
                                 locale.or,
                                 style: const TextStyle(
@@ -248,9 +249,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              const SizedBox(
-                                width: 100,
+                              SizedBox(width: 8.w),
+                              SizedBox(
+                                width: 100.w,
                                 child: Divider(
                                   color: AppColors.secondaryColor,
                                   thickness: 1,

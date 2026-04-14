@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/theme/app_colors.dart';
 import 'package:movies/core/widgets/movie_grid_item.dart';
 import '../../../../core/services/service_locater.dart';
@@ -106,18 +107,18 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.dangerColor,
                                     foregroundColor: AppColors.primaryText,
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                       vertical: 16,
-                                    ),
+                                    ).r,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(16).w,
                                     ),
                                   ),
                                   child: Text(
                                     locale.watch,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                                      fontSize: 18.sp,
                                     ),
                                   ),
                                 ),
@@ -129,7 +130,7 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                               runtime: movie.runtime ?? 0,
                               likeCount: movie.likeCount,
                             ),
-                            const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
       
                             MovieScreenshots(screenshotUrls: movie.screenshots),
       
@@ -140,15 +141,15 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
       
                             _buildSectionTitle(locale.summary),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding: EdgeInsets.symmetric(horizontal: 20).r,
                               child: Text(
                                 movie.descriptionFull.isNotEmpty
                                     ? movie.descriptionFull
                                     : locale.noDesAvail,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.secondaryText,
-                                  fontSize: 15,
-                                  height: 1.6,
+                                  fontSize: 15.sp,
+                                  height: 1.6.h,
                                 ),
                               ),
                             ),
@@ -161,7 +162,7 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                             _buildSectionTitle(locale.genres),
                             _buildGenresRow(movie.genres),
       
-                            const SizedBox(height: 40),
+                            SizedBox(height: 40.h),
                           ],
                         ),
                       ),
@@ -185,9 +186,9 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
         padding: const EdgeInsets.fromLTRB(20, 30, 20, 15),
         child: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 19,
+            fontSize: 19.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -200,18 +201,18 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
       delay: const Duration(milliseconds: 200),
       duration: const Duration(milliseconds: 500),
       child: Container(
-        height: 230,
-        margin: const EdgeInsets.only(bottom: 20),
+        height: 230.h,
+        margin: EdgeInsets.only(bottom: 20).r,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20).r,
           itemCount: suggestions.length,
           itemBuilder: (context, index) {
             final movie = suggestions[index];
             return Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: EdgeInsets.only(right: 12).r,
               child: SizedBox(
-                width: 130,
+                width: 130.w,
                 child: MovieGridItem(
                   movieId: movie.id,
                   rating: movie.rating.toString(),
@@ -227,26 +228,26 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
 
   Widget _buildGenresRow(List<String> genres) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20).r,
       child: Wrap(
         spacing: 10,
         runSpacing: 10,
         children: genres
             .map(
               (genre) => Container(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
-                ),
+                ).r,
                 decoration: BoxDecoration(
                   color: AppColors.headerBackground,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20).w,
                 ),
                 child: Text(
                   genre,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.primaryText,
-                    fontSize: 13,
+                    fontSize: 13.sp,
                   ),
                 ),
               ),

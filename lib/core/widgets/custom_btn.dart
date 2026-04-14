@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 
 class CustomBtn extends StatelessWidget {
@@ -35,11 +36,11 @@ class CustomBtn extends StatelessWidget {
       decoration: border
           ? BoxDecoration(
               borderRadius: borderRadius,
-              border: Border.all(color: AppColors.secondaryColor, width: 2),
+              border: Border.all(color: AppColors.secondaryColor, width: 2.w),
             )
           : null,
       child: CupertinoButton(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: 16).r,
         borderRadius: borderRadius,
         color: border ? Colors.transparent : buttomColor,
         onPressed: onTap,
@@ -60,7 +61,7 @@ class CustomBtn extends StatelessWidget {
                   text,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     color: border ? AppColors.secondaryColor : textColor,
                   ),
                 ),
@@ -68,8 +69,8 @@ class CustomBtn extends StatelessWidget {
             ],
           ),
           secondChild: SizedBox(
-            width: 60,
-            height: 26,
+            width: 60.w,
+            height: 26.h,
             child: CupertinoActivityIndicator(
               color: border ? AppColors.secondaryColor : textColor,
             ),

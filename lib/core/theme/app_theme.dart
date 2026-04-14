@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app_colors.dart';
 
 abstract class AppTheme {
@@ -18,38 +19,38 @@ abstract class AppTheme {
       filled: true,
       fillColor: Color(0xff282A28),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16).w,
         borderSide: BorderSide(color: Colors.red),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16).w,
         borderSide: BorderSide(color: Colors.red),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16).w,
         borderSide: BorderSide(color: AppColors.primaryColor),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16).w,
         borderSide: BorderSide(color: AppColors.primaryColor),
       ),
     ),
     textTheme: TextTheme(
-      bodySmall: TextStyle(fontSize: 14, color: Colors.white),
-      bodyMedium: TextStyle(fontSize: 16, color: Colors.white),
-      bodyLarge: TextStyle(fontSize: 20, color: Colors.white),
+      bodySmall: TextStyle(fontSize: 14.sp, color: Colors.white),
+      bodyMedium: TextStyle(fontSize: 16.sp, color: Colors.white),
+      bodyLarge: TextStyle(fontSize: 20.sp, color: Colors.white),
       titleSmall: TextStyle(
-        fontSize: 16,
+        fontSize: 16.sp,
         color: Colors.white,
         fontWeight: FontWeight.bold,
       ),
       titleMedium: TextStyle(
-        fontSize: 18,
+        fontSize: 18.sp,
         color: Colors.white,
         fontWeight: FontWeight.bold,
       ),
       titleLarge: TextStyle(
-        fontSize: 22,
+        fontSize: 22.sp,
         color: Colors.white,
         fontWeight: FontWeight.bold,
       ),

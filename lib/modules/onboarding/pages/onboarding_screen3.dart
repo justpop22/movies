@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../config/shared_pref/cache_manager.dart';
 import '../../../core/routes/app_route_name.dart';
 import '../../../core/theme/app_colors.dart';
@@ -24,16 +25,16 @@ class OnboardingScreen3 extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40).w,
+                topRight: Radius.circular(40).w,
               ),
               child: Container(
                 color: Color(0xff121312),
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 40,
-                ),
+                ).r,
                 width: double.infinity,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -41,24 +42,24 @@ class OnboardingScreen3 extends StatelessWidget {
                     Text(
                       "Explore All Genres",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.bold,
-                        height: 1.3,
+                        height: 1.3.h,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Text(
                       "Discover movies from every genre, in all available qualities. Find something new and exciting to watch every day.",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: TextStyle(
+                        fontSize: 20.sp,
                         color: Colors.white,
-                        height: 1.4,
+                        height: 1.4.h,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
 
                     ValueListenableBuilder<int>(
                       valueListenable: globalCurrentPage,
@@ -88,7 +89,7 @@ class OnboardingScreen3 extends StatelessWidget {
                                 );
                               },
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                             Visibility(
                               visible: current != 0,
                               child: CustomBtn(

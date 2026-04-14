@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,7 @@ class ProfileTabs extends StatelessWidget {
       children: [
         Positioned.fill(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0).r,
             child: Row(
               children: [
                 _buildTabItem(
@@ -43,7 +44,7 @@ class ProfileTabs extends StatelessWidget {
           bottom: 0,
           child: Stack(
             children: [
-              Container(height: 3, color: Colors.transparent),
+              Container(height: 3.h, color: Colors.transparent),
               AnimatedAlign(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -54,7 +55,7 @@ class ProfileTabs extends StatelessWidget {
                     : Alignment.centerRight,
                 child: FractionallySizedBox(
                   widthFactor: 0.5,
-                  child: Container(height: 3, color: AppColors.secondaryColor),
+                  child: Container(height: 3.h, color: AppColors.secondaryColor),
                 ),
               ),
             ],
@@ -87,20 +88,20 @@ class ProfileTabs extends StatelessWidget {
             else
               Image.asset(
                 iconSource as String,
-                width: 30,
-                height: 30,
+                width: 30.w,
+                height: 30.h,
                 color: color,
               ),
-            const SizedBox(height: 5),
+            SizedBox(height: 5.h),
             Text(
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
           ],
         ),
       ),

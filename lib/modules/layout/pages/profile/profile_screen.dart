@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/routes/app_route_name.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/movie_grid_item.dart';
@@ -121,8 +122,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Center(
           child: Image.asset(
             imagePath,
-            width: 124,
-            height: 124,
+            width: 124.w,
+            height: 124.h,
             fit: BoxFit.contain,
           ),
         ),
@@ -130,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return SliverPadding(
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(15).w,
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,

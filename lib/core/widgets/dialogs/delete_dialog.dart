@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../features/auth/presentation/cubit/auth_bloc.dart';
 import '../../../features/auth/presentation/cubit/auth_event.dart';
 import '../../../features/auth/presentation/cubit/auth_state.dart';
@@ -61,9 +62,9 @@ void showDeleteConfirmation(BuildContext context) {
                   context.read<AuthBloc>().add(DeleteAccountEvent());
                 },
                 child: isLoading
-                    ? const SizedBox(
-                  height: 20,
-                  width: 20,
+                    ? SizedBox(
+                  height: 20.h,
+                  width: 20.w,
                   child: CircularProgressIndicator(
                     color: AppColors.dangerColor,
                     strokeWidth: 2,

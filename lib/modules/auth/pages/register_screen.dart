@@ -2,6 +2,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/params/signup_params.dart';
 import '../../../../core/provider/app_provider.dart';
@@ -103,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0).w,
                 child: Form(
                   key: _formKey,
                   child: ConstrainedBox(
@@ -116,14 +117,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const Spacer(),
                           AvatarPicker(
                             avatarList: _avatars,
-                            avatarRadius: 70,
+                            avatarRadius: 70.w,
                             initialAvatar: _avatars[selectedAvatarIndex],
                             onAvatarChanged: (avatarPath) {
                               setState(() {
                                 selectedAvatarIndex = _avatars.indexOf(avatarPath);
                               });
                             },
-                          ),                          SizedBox(height: 12,),
+                          ),
+                          SizedBox(height: 12.h,),
                           Text("Avatar",style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold
@@ -142,7 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               hintText: locale.name,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
 
                           TextFormField(
                             controller: _emailController,
@@ -160,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               hintText: locale.email,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
 
                           TextFormField(
                             controller: _passwordController,
@@ -189,7 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
 
                           TextFormField(
                             controller: _rePasswordController,
@@ -204,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               hintText: locale.rePassword,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
 
                           TextFormField(
                             controller: _phoneController,
@@ -221,7 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               hintText: locale.phoneNumber,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
                           const Spacer(),
 
                           CustomBtn(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/services/service_locater.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/params/movieparams.dart';
@@ -108,7 +109,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
               backgroundColor: AppColors.mainBackground,
               automaticallyImplyLeading: false,
               pinned: true,
-              toolbarHeight: 70,
+              toolbarHeight: 70.h,
               title: _buildCategoryList(),
             ),
 
@@ -129,7 +130,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
                     child: Center(
                       child: Text(
                         state.message,
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
                   );
@@ -149,7 +150,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
                   }
 
                   return SliverPadding(
-                    padding: const EdgeInsets.all(15),
+                    padding: EdgeInsets.all(15).w,
                     sliver: SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -183,7 +184,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
                 return const SliverToBoxAdapter(child: SizedBox.shrink());
               },
             ),
-            const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
+            SliverPadding(padding: EdgeInsets.only(bottom: 20).r),
           ],
         ),
       ),
@@ -192,7 +193,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
 
   Widget _buildCategoryList() {
     return SizedBox(
-      height: 40,
+      height: 40.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _categories.length,
@@ -201,21 +202,21 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
           final isSelected = category == _selectedCategory;
 
           return Padding(
-            padding: const EdgeInsets.only(right: 10),
+            padding: EdgeInsets.only(right: 10).r,
             child: GestureDetector(
               onTap: () => _onCategorySelected(category),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16).r,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.secondaryColor
                       : AppColors.headerBackground,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16).w,
                   border: Border.all(
                     color: isSelected
                         ? AppColors.mainBackground
                         : Colors.transparent,
-                    width: 1,
+                    width: 1.w,
                   ),
                 ),
                 alignment: Alignment.center,
@@ -224,7 +225,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
                   style: TextStyle(
                     color: isSelected ? Colors.black : AppColors.secondaryText,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                   ),
                 ),
               ),
