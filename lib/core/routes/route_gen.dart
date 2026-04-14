@@ -59,9 +59,24 @@ class RouteGen {
         );
       case RouteName.movieDetail:
         return PageRouteBuilder(
-          transitionDuration: Duration(seconds: 1),
+          transitionDuration: const Duration(milliseconds: 600),
           pageBuilder: (context, animation, secondaryAnimation) {
-            return MovieDetailsScreen(movieId: settings.arguments as int);
+            final args = settings.arguments as Map<String, dynamic>;
+            final movieId = args['movieId'] as int;
+            final heroTag = args['heroTag'] as String;
+            final imageUrl = args['imageUrl'] as String;
+
+            return MovieDetailsScreen(
+              movieId: movieId,
+              heroTag: heroTag,
+              imageUrl: imageUrl,
+            );
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: CurveTween(curve: Curves.easeOut).animate(animation),
+              child: child,
+            );
           },
         );
 

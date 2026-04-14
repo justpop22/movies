@@ -172,6 +172,7 @@ class _BrowseScreenContentState extends State<_BrowseScreenContent> {
                             movieId: movie.id,
                             imagePath: movie.mediumCoverImage ?? "",
                             rating: movie.rating.toString(),
+                            heroTag: 'similar_poster_${movie.id}',
                           );
                         },
                         childCount: state.hasReachedMax
