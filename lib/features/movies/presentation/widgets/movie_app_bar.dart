@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,12 +13,14 @@ class MovieAppBar extends StatelessWidget {
   final MovieDetailEntity movie;
   final bool isFavorite;
   final bool isBookMarked;
+  final String heroTag;
 
   const MovieAppBar({
     super.key,
     required this.movie,
     required this.isFavorite,
     required this.isBookMarked,
+    required this.heroTag,
   });
 
   @override
@@ -77,11 +80,20 @@ class MovieAppBar extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              movie.posterUrl ?? "",
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Container(color: AppColors.headerBackground),
+            Hero(
+              tag: heroTag,
+              child: Material(
+                type: MaterialType.transparency,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.zero,
+                  child: CachedNetworkImage(
+                    imageUrl: movie.posterUrl ?? "",
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(color: AppColors.headerBackground),
+                    errorWidget: (context, url, error) => Container(color: AppColors.headerBackground),
+                  ),
+                ),
+              ),
             ),
             Container(
               decoration: const BoxDecoration(

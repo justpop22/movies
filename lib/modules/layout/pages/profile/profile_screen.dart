@@ -149,6 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 movie.largeCoverImage ??
                 "",
             rating: movie.rating.toString(),
+            heroTag: 'similar_poster_${movie.id}',
           );
         }, childCount: movies.length),
       ),

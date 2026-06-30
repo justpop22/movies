@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,21 +20,32 @@ import '../../../../l10n/app_localizations.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
   final int movieId;
+  final String heroTag;
+  final String imageUrl;
 
-  const MovieDetailsScreen({super.key, required this.movieId});
+  const MovieDetailsScreen({
+    super.key,
+    required this.movieId,
+    required this.heroTag,
+    required this.imageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          sl<MovieDetailsBloc>()..add(GetMovieDetailsEvent(id: movieId)),
-      child: const _MovieDetailsContent(),
+      sl<MovieDetailsBloc>()..add(GetMovieDetailsEvent(id: movieId)),
+      // ⭐️ FIX: Passed the tag down into the state widget
+      child: _MovieDetailsContent(heroTag: heroTag,imageUrl: imageUrl),
     );
   }
 }
 
 class _MovieDetailsContent extends StatefulWidget {
-  const _MovieDetailsContent();
+  final String heroTag;
+  final String imageUrl;
+
+  const _MovieDetailsContent({required this.heroTag,required this.imageUrl});
 
   @override
   State<_MovieDetailsContent> createState() => _MovieDetailsContentState();
@@ -55,11 +67,46 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
         backgroundColor: AppColors.mainBackground,
         body: BlocBuilder<MovieDetailsBloc, MovieDetailsState>(
           builder: (context, movieState) {
+
+            // Inside movie_details.dart -> _MovieDetailsContentState -> build
             if (movieState is MovieDetailsLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.secondaryColor),
+              return CustomScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                slivers: [
+                  SliverAppBar(
+                    backgroundColor: AppColors.headerBackground,
+                    expandedHeight: 450.0.h,
+                    leading: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 28),
+                    ),
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Hero(
+                        tag: widget.heroTag,
+                        child: Material(
+                          type: MaterialType.transparency, // Match source transparency
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.zero, // Morph from rounded to square
+                            child: CachedNetworkImage(
+                              imageUrl: widget.imageUrl, // Use the image URL passed from Home
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(color: AppColors.headerBackground),
+                              errorWidget: (context, url, error) => Container(color: AppColors.headerBackground),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColors.secondaryColor),
+                    ),
+                  ),
+                ],
               );
             }
+
             if (movieState is MovieDetailsFailure) {
               return Center(
                 child: Text(
@@ -68,23 +115,23 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                 ),
               );
             }
-      
+
             if (movieState is MovieDetailsLoaded) {
               final movie = movieState.movieDetail;
               final suggestions = movieState.suggestions;
-      
+
               return BlocBuilder<UserBloc, UserState>(
                 builder: (context, userState) {
                   bool isFavorite = false;
                   bool isBookMarked = false;
-      
+
                   if (userState is UserDataLoaded) {
                     isFavorite = userState.favorites.any((m) => m.id == movie.id);
                     isBookMarked = userState.watchHistory.any(
-                      (m) => m.id == movie.id,
+                          (m) => m.id == movie.id,
                     );
                   }
-      
+
                   return CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: [
@@ -92,8 +139,9 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                         movie: movie,
                         isFavorite: isFavorite,
                         isBookMarked: isBookMarked,
+                        heroTag: widget.heroTag,
                       ),
-      
+
                       SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,21 +172,21 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                                 ),
                               ),
                             ),
-      
+
                             MovieStats(
                               rating: movie.rating,
                               runtime: movie.runtime ?? 0,
                               likeCount: movie.likeCount,
                             ),
                             SizedBox(height: 20.h),
-      
+
                             MovieScreenshots(screenshotUrls: movie.screenshots),
-      
+
                             if (suggestions.isNotEmpty) ...[
                               _buildSectionTitle(locale.similar),
                               _buildSimilarMoviesList(suggestions),
                             ],
-      
+
                             _buildSectionTitle(locale.summary),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 20).r,
@@ -153,15 +201,15 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                                 ),
                               ),
                             ),
-      
+
                             if (movie.cast.isNotEmpty) ...[
                               _buildSectionTitle(locale.cast),
                               MovieCast(castList: movie.cast),
                             ],
-      
+
                             _buildSectionTitle(locale.genres),
                             _buildGenresRow(movie.genres),
-      
+
                             SizedBox(height: 40.h),
                           ],
                         ),
@@ -217,6 +265,7 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
                   movieId: movie.id,
                   rating: movie.rating.toString(),
                   imagePath: movie.mediumCoverImage ?? "",
+                  heroTag: 'similar_poster_${movie.id}',
                 ),
               ),
             );
@@ -235,23 +284,23 @@ class _MovieDetailsContentState extends State<_MovieDetailsContent> {
         children: genres
             .map(
               (genre) => Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ).r,
-                decoration: BoxDecoration(
-                  color: AppColors.headerBackground,
-                  borderRadius: BorderRadius.circular(20).w,
-                ),
-                child: Text(
-                  genre,
-                  style: TextStyle(
-                    color: AppColors.primaryText,
-                    fontSize: 13.sp,
-                  ),
-                ),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ).r,
+            decoration: BoxDecoration(
+              color: AppColors.headerBackground,
+              borderRadius: BorderRadius.circular(20).w,
+            ),
+            child: Text(
+              genre,
+              style: TextStyle(
+                color: AppColors.primaryText,
+                fontSize: 13.sp,
               ),
-            )
+            ),
+          ),
+        )
             .toList(),
       ),
     );

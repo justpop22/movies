@@ -6,7 +6,7 @@ class ProfileTabsDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
 
-  ProfileTabsDelegate({required this.child, this.height = 80.0});
+  ProfileTabsDelegate({required this.child, this.height = 85.0});
 
   @override
   double get minExtent => height;

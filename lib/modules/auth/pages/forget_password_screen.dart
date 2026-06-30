@@ -61,7 +61,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: EdgeInsets.all(8.0).w,
+                padding: EdgeInsets.all(20.0).w,
                 child: Form(
                   key: _formKey,
                   child: ConstrainedBox(

@@ -146,6 +146,7 @@ class _SearchScreenContentState extends State<_SearchScreenContent> {
                             movieId: movie.id,
                             imagePath: movie.mediumCoverImage ?? "",
                             rating: movie.rating.toString(),
+                            heroTag: 'similar_poster_${movie.id}',
                           );
                         },
                         childCount: state.hasReachedMax
